@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>114學年--教師研習次數記錄</title>
+    <title>114學年度--教師研習次數記錄</title>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
@@ -145,9 +145,7 @@
             cursor: pointer;
         }
 
-        /* ==================================================== */
-        /* 📱 手機與平板專屬 RWD 自動排版巧思 (螢幕小於 768px 觸發) */
-        /* ==================================================== */
+        /* 📱 手機與平板專屬 RWD 自動排版巧思 */
         @media (max-width: 768px) {
             body { padding: 8px; }
             header { padding: 12px 10px; margin-bottom: 10px; }
@@ -155,14 +153,12 @@
             header p { font-size: 15px; }
             th, td { font-size: 18px; padding: 10px 4px; }
             
-            /* 在手機上，隱藏全體總覽的「職碼」、「截止累計」與「本年度新增」，避免塞車 */
             table th:nth-child(1), table td:nth-child(1),
             table th:nth-child(3), table td:nth-child(3),
             table th:nth-child(4), table td:nth-child(4) {
                 display: none;
             }
             
-            /* 手機明細表隱藏「天數項目」與「時數」 */
             #personal-content table th:nth-child(2), #personal-content table td:nth-child(2),
             #personal-content table th:nth-child(3), #personal-content table td:nth-child(3) {
                 display: none;
@@ -185,12 +181,12 @@
 
 <div class="container">
     <header>
-        <h1>114學年度--教師研習次數記錄</h1>
+        <h1>114學年度--數學領域教師研習次數記錄系統</h1>
     </header>
 
     <div class="status-zone">
         <p>🌐 資料庫連線狀態...</p>
-        <span id="file-status" class="status-badge loading">正在連線至雲端 Excel 檔案...</span>
+        <span id="file-status" class="status-badge loading">正在連線至雲端資料庫...</span>
     </div>
 
     <div class="main-content" id="main-content">
@@ -200,11 +196,11 @@
         </div>
 
         <div id="overview-view" class="view-section active">
-            <h3>全體研習統計</h3>
+            <h3>全體教師研習統計摘要</h3>
             <table>
                 <thead>
                     <tr>
-                        <th>序號</th>
+                        <th>職碼</th>
                         <th>姓名</th>
                         <th>114/6/30截止累計</th>
                         <th>本年度新增次數</th>
@@ -242,7 +238,7 @@
         fetch(excelFileName)
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('找不到 Excel 檔案，請確認檔案名稱是否正確。');
+                    throw new Error('找不到雲端資料庫檔案，請確認檔案是否存在。');
                 }
                 return response.arrayBuffer();
             })
@@ -255,7 +251,8 @@
                 
                 mergeSheetsToSystemData(sheetTeachers, sheetRecords);
 
-                document.getElementById('file-status').textContent = `成功同步雲端資料：${excelFileName}`;
+                // 💡 修改處：成功同步後，不再顯示 Excel 實體檔名，畫面更乾淨隱密
+                document.getElementById('file-status').textContent = `成功同步雲端資料...`;
                 document.getElementById('file-status').className = "status-badge loaded";
                 document.getElementById('main-content').style.display = "block";
 
@@ -268,14 +265,12 @@
             });
     });
 
-    // 💡 調整後的配對邏輯：不再依賴「研習紀錄」表的職碼欄位，而是直接利用「姓名」進行配對
     function mergeSheetsToSystemData(teachers, records) {
         seminarData = teachers.map(t => {
             const id = String(t["職碼"] || "").trim();
             const name = String(t["姓名"] || "").trim();
             const prevCount = parseInt(t["歷史截止累計"]) || 0;
 
-            // 從流水帳紀錄中，找出姓名完全相符的資料
             const matchedRecords = records.filter(r => String(r["姓名"] || "").trim() === name).map(r => ({
                 date: String(r["研習日期"] || "").trim(),
                 item: String(r["研習天數"] || r["研習天數項目"] || "").trim(),
