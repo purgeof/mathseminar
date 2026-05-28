@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>114學年教師研習次數記錄</title>
+    <title>114學年度教師研習次數記錄</title>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
@@ -172,7 +172,7 @@
             .btn-view { padding: 6px 10px; font-size: 16px; }
         }
 
-        /* 💻 當螢幕寬度大於 768px (例如您的24吋桌機) 展開優化 */
+        /* 💻 當螢幕寬度大於 768px 展開優化 */
         @media (min-width: 769px) {
             .personal-select-wrapper { flex-direction: row; }
             .summary-box { grid-template-columns: repeat(4, 1fr); }
@@ -189,8 +189,8 @@
     </header>
 
     <div class="status-zone">
-        <p>🌐 資料連線中...</p>
-        <span id="file-status" class="status-badge loading">正在連線至雲端 Excel 檔案...</span>
+        <p>🌐 資料連線狀態....</p>
+        <span id="file-status" class="status-badge loading">已連結資料中...</span>
     </div>
 
     <div class="main-content" id="main-content">
@@ -268,13 +268,15 @@
             });
     });
 
+    // 💡 調整後的配對邏輯：不再依賴「研習紀錄」表的職碼欄位，而是直接利用「姓名」進行配對
     function mergeSheetsToSystemData(teachers, records) {
         seminarData = teachers.map(t => {
             const id = String(t["職碼"] || "").trim();
             const name = String(t["姓名"] || "").trim();
             const prevCount = parseInt(t["歷史截止累計"]) || 0;
 
-            const matchedRecords = records.filter(r => String(r["職碼"]).trim() === id).map(r => ({
+            // 從流水帳紀錄中，找出姓名完全相符的資料
+            const matchedRecords = records.filter(r => String(r["姓名"] || "").trim() === name).map(r => ({
                 date: String(r["研習日期"] || "").trim(),
                 item: String(r["研習天數"] || r["研習天數項目"] || "").trim(),
                 hours: String(r["研習時數"] || "").trim(),
