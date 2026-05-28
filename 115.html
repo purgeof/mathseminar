@@ -3,19 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>114學年度數學領域教師研習次數記錄系統 (自動載入版)</title>
+    <title>114學年度數學領域教師研習次數記錄系統 (星空深灰專業版)</title>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --success-color: #2ecc71;
-            --danger-color: #e74c3c;
-            --bg-color: #f8f9fa;
-            --card-bg: #ffffff;
-            --text-color: #333;
-            --border-color: #e2e8f0;
-            --overlay-bg: rgba(0, 0, 0, 0.85);
+            /* === 全新深色主題配色巧思 === */
+            --primary-bg: #121212;      /* 網頁最底層背景：極致深灰 (接近黑) */
+            --card-bg: #1e1e1e;         /* 內容卡片背景：微亮深灰，製造層次感 */
+            --header-bg: #2d2d2d;       /* 標題與導覽背景：稍亮灰色 */
+            --table-header-bg: #333333; /* 表格標頭背景 */
+            
+            --text-main: #e0e0e0;       /* 主文字顏色：柔和淺灰 (不刺眼) */
+            --text-muted: #a0a0a0;      /* 次要文字、單位顏色 */
+            --text-on-primary: #ffffff; /* 深色按鈕上的文字 */
+            
+            --accent-blue: #3498db;     /* 強調色(藍)：智慧藍，用於按鈕、框線 */
+            --accent-gold: #f39c12;     /* 強調色(金)：琥珀金，用於關鍵數據與提示 */
+            --success-green: #2ecc71;   /* 狀態色(綠)：柔和綠 */
+            --danger-red: #e74c3c;      /* 狀態色(紅)：警示紅，用於公文標頭 */
+            
+            --border-color: #383838;    /* 分隔線、框線顏色：深灰色 */
+            --overlay-bg: rgba(0, 0, 0, 0.9); /* 全螢幕燈箱背景：更深的黑色 */
         }
 
         /* 基礎全域大字體設定 */
@@ -25,68 +33,71 @@
             padding: 0; 
             font-family: "Helvetica Neue", Helvetica, Arial, "PingFang TC", "Microsoft JhengHei", sans-serif; 
             font-size: 19px; 
+            -webkit-font-smoothing: antialiased; /* 字體反鋸齒，深色模式更清晰 */
         }
-        body { background-color: var(--bg-color); color: var(--text-color); line-height: 1.5; padding: 15px; }
+        body { background-color: var(--primary-bg); color: var(--text-main); line-height: 1.5; padding: 15px; }
         .container { max-width: 1200px; margin: 0 auto; }
         
         /* 標題區 */
-        header { text-align: center; margin-bottom: 15px; background: var(--card-bg); padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        header h1 { color: var(--primary-color); font-size: 28px; margin-bottom: 4px; font-weight: bold; }
-        header p { font-size: 18px; color: #718096; }
+        header { text-align: center; margin-bottom: 15px; background: var(--header-bg); padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid var(--border-color); }
+        header h1 { color: var(--text-on-primary); font-size: 28px; margin-bottom: 4px; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        header p { font-size: 18px; color: var(--text-muted); }
         
-        /* 狀態提示區 */
+        /* 雲端連線狀態提示區 */
         .status-zone {
-            background: #ebf8ff;
-            border: 2px dashed #90cdf4;
+            background: rgba(52, 152, 219, 0.1); /* 微亮智慧藍背景 */
+            border: 2px dashed rgba(52, 152, 219, 0.5);
             padding: 15px;
             text-align: center;
             border-radius: 8px;
             margin-bottom: 15px;
         }
-        .status-zone p { color: #2b6cb0; font-weight: bold; font-size: 20px; margin-bottom: 5px; }
-        .status-badge { display: inline-block; padding: 4px 12px; background: #cbd5e1; color: #475569; border-radius: 20px; font-size: 16px; font-weight: bold; }
-        .status-badge.loading { background: #feebc8; color: #c05621; }
-        .status-badge.loaded { background: var(--success-color); color: white; }
-        .status-badge.error { background: var(--danger-color); color: white; }
+        .status-zone p { color: var(--accent-blue); font-weight: bold; font-size: 20px; margin-bottom: 5px; }
+        .status-badge { display: inline-block; padding: 4px 12px; background: #444; color: var(--text-main); border-radius: 20px; font-size: 16px; font-weight: bold; }
+        .status-badge.loading { background: rgba(243, 156, 18, 0.2); color: var(--accent-gold); }
+        .status-badge.loaded { background: var(--success-green); color: white; }
+        .status-badge.error { background: var(--danger-red); color: white; }
 
         /* 內容呈現區 */
         .main-content { display: none; margin-top: 10px; }
         .nav-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
         
         /* 頁籤按鈕 */
-        .tab-btn { padding: 10px 22px; background: #e2e8f0; border: none; border-radius: 6px; cursor: pointer; font-size: 20px; font-weight: bold; color: var(--primary-color); transition: all 0.2s; }
-        .tab-btn.active { background: var(--primary-color); color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .tab-btn { padding: 10px 22px; background: #333; border: none; border-radius: 6px; cursor: pointer; font-size: 20px; font-weight: bold; color: var(--text-main); transition: all 0.2s; }
+        .tab-btn.active { background: var(--accent-blue); color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
 
-        .view-section { display: none; background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        /* 內容卡片區 */
+        .view-section { display: none; background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid var(--border-color); }
         .view-section.active { display: block; }
-        .view-section h3 { font-size: 22px; color: var(--primary-color); margin-bottom: 12px; border-bottom: 2px solid var(--border-color); padding-bottom: 6px; }
+        .view-section h3 { font-size: 22px; color: var(--text-main); margin-bottom: 12px; border-bottom: 2px solid var(--border-color); padding-bottom: 6px; font-weight: bold; }
 
-        /* 表格排版置中 */
+        /* 表格排版：深色置中樣式 */
         table { width: 100%; border-collapse: collapse; margin-top: 5px; text-align: center; }
-        th, td { padding: 8px 14px; border-bottom: 1px solid var(--border-color); font-size: 20px; text-align: center; vertical-align: middle; }
-        th { background-color: #f1f5f9; color: var(--primary-color); font-weight: bold; font-size: 20px; }
-        tr:hover { background-color: #f8fafc; }
-        td strong { font-size: 20px; }
+        th, td { padding: 10px 14px; border-bottom: 1px solid var(--border-color); font-size: 20px; text-align: center; vertical-align: middle; color: var(--text-main); }
+        th { background-color: var(--table-header-bg); color: var(--text-main); font-weight: bold; font-size: 20px; text-transform: uppercase; } /* 標頭大寫增加質感 */
+        tr:hover { background-color: rgba(255, 255, 255, 0.03); } /* 極微亮的 hover 效果 */
+        td strong { font-size: 20px; color: var(--text-on-primary); }
+        .final-count { color: var(--danger-red); font-weight:bold; font-size:21px; } /* 最終累計用Amber Gold或警告紅凸顯 */
 
-        /* 個人紀錄下拉選單 */
+        /* 個人紀錄下拉選單：配合深色 */
         .personal-select-wrapper { margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-        .personal-select-wrapper label { font-size: 20px; font-weight: bold; }
-        select { padding: 8px 16px; font-size: 20px; font-weight: bold; border-radius: 6px; border: 2px solid var(--secondary-color); outline: none; background: white; cursor: pointer; }
+        .personal-select-wrapper label { font-size: 20px; font-weight: bold; color: var(--text-main); }
+        select { padding: 8px 16px; font-size: 20px; font-weight: bold; border-radius: 6px; border: 2px solid var(--accent-blue); outline: none; background: var(--card-bg); color: var(--text-main); cursor: pointer; }
         
-        /* 個人摘要統計卡片 */
+        /* 個人摘要統計卡片：放大字體與深色 */
         .summary-box { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 15px; }
-        .summary-card { background: #f1f5f9; padding: 10px 15px; border-radius: 6px; text-align: center; border: 1px solid var(--border-color); }
-        .summary-card h4 { font-size: 16px; color: #64748b; margin-bottom: 2px; font-weight: bold; }
-        .summary-card p { font-size: 28px; font-weight: bold; color: var(--primary-color); }
+        .summary-card { background: rgba(255,255,255,0.02); padding: 10px 15px; border-radius: 6px; text-align: center; border: 1px solid var(--border-color); }
+        .summary-card h4 { font-size: 16px; color: var(--text-muted); margin-bottom: 2px; font-weight: bold; }
+        .summary-card p { font-size: 28px; font-weight: bold; color: var(--text-on-primary); }
         
-        .history-title { margin: 15px 0 8px 0; font-size: 22px; font-weight: bold; color: var(--primary-color); border-left: 5px solid var(--secondary-color); padding-left: 10px; line-height: 1.3; }
-        .no-data { color: #94a3b8; text-align: center; padding: 20px; font-size: 20px; }
+        .history-title { margin: 15px 0 8px 0; font-size: 22px; font-weight: bold; color: var(--text-main); border-left: 5px solid var(--accent-blue); padding-left: 10px; line-height: 1.3; }
+        .no-data { color: var(--text-muted); text-align: center; padding: 20px; font-size: 20px; }
         
-        /* 檢視按鈕 */
-        .btn-view { padding: 6px 14px; background-color: var(--secondary-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 17px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: inline-block; }
+        /* 檢視按鈕：深色智慧藍 */
+        .btn-view { padding: 6px 14px; background-color: var(--accent-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 17px; box-shadow: 0 2px 4px rgba(0,0,0,0.3); display: inline-block; transition: background-color 0.2s; }
         .btn-view:hover { background-color: #2980b9; }
 
-        /* 公文圖片預覽小圖樣式 */
+        /* 公文圖片預覽小圖樣式：置中對齊且加上發光 hover */
         .doc-thumbnail {
             display: inline-block;
             height: 40px; 
@@ -94,17 +105,17 @@
             border-radius: 4px;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border: 1px solid #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            border: 1px solid var(--border-color);
             vertical-align: middle;
         }
         .doc-thumbnail:hover {
             transform: scale(1.15);
-            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
-            border-color: var(--secondary-color);
+            box-shadow: 0 0 8px rgba(52, 152, 219, 0.6); /* 滑鼠滑過時智慧藍發光 */
+            border-color: var(--accent-blue);
         }
         
-        /* 全螢幕燈箱 */
+        /* 全螢幕燈箱：更深黑色，琥珀金關閉鈕 */
         .overlay {
             display: none;
             position: fixed;
@@ -119,16 +130,13 @@
             opacity: 0;
             transition: opacity 0.2s ease;
         }
-        .overlay.active {
-            display: flex;
-            opacity: 1;
-        }
+        .overlay.active { display: flex; opacity: 1; }
         .full-doc-image {
             max-width: 90%;
             max-height: 90%;
             border-radius: 6px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            border: 3px solid #fff;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8); /* 更重的陰影 */
+            border: 3px solid #fff; /* 圖片邊框維持白色以符合紙張公文感 */
             object-fit: contain;
             cursor: pointer;
         }
@@ -136,13 +144,14 @@
             position: absolute;
             top: 15px;
             right: 25px;
-            color: #fff;
+            color: #ccc;
             font-size: 40px;
             font-weight: bold;
             cursor: pointer;
+            transition: all 0.2s;
             z-index: 10000;
         }
-        .overlay-close-btn:hover { color: var(--success-color); }
+        .overlay-close-btn:hover { color: var(--accent-gold); } /* 關閉鈕 hover 變琥珀金 */
     </style>
 </head>
 <body>
@@ -150,7 +159,7 @@
 <div class="container">
     <header>
         <h1>114學年度--數學領域教師研習次數記錄系統</h1>
-        <p>【雲端連線自動版】網頁打開即自動與雲端 Excel 同步</p>
+        <p>【雲端自動同步 ｜ 星空深灰專業版】置中排版，精美深色背景體驗</p>
     </header>
 
     <div class="status-zone">
@@ -311,7 +320,7 @@
                 <td><strong>${teacher.name}</strong></td>
                 <td>${teacher.prevCount} 次</td>
                 <td>+${newCount} 次</td>
-                <td><span style="color: #e74c3c; font-weight:bold; font-size:21px;">${totalCount} 次</span></td>
+                <td><span class="final-count">${totalCount} 次</span></td>
                 <td>
                     <button class="btn-view" onclick="viewTeacherDetail('${teacher.id}')">檢視明細</button>
                 </td>
@@ -377,8 +386,8 @@
             <div class="summary-box">
                 <div class="summary-card"><h4>教師姓名</h4><p>${teacher.name}</p></div>
                 <div class="summary-card"><h4>114/6/30截止累計</h4><p>${teacher.prevCount}</p></div>
-                <div class="summary-card"><h4>本年度新增次數</h4><p style="color: #3498db;">+${newCount}</p></div>
-                <div class="summary-card"><h4>最終累計總次數</h4><p style="color: #e74c3c;">${totalCount}</p></div>
+                <div class="summary-card"><h4>本年度新增次數</h4><p style="color: var(--accent-blue);">+${newCount}</p></div>
+                <div class="summary-card"><h4>最終累計總次數</h4><p style="color: var(--danger-red);">${totalCount}</p></div>
             </div>
             <div class="history-title">本學年度研習明細</div>
             <table>
@@ -388,7 +397,7 @@
                         <th>研習天數</th>
                         <th>研習時數</th>
                         <th>採計次數</th>
-                        <th style="color: #c0392b;">研習公文 (點圖放大)</th>
+                        <th style="color: var(--danger-red);">研習公文 (點圖放大)</th>
                     </tr>
                 </thead>
                 <tbody>${recordsRows}</tbody>
