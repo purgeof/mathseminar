@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>114學年度數學領域教師研習次數記錄</title>
+    <title>114學年度數學領域教師研習次數記錄系統 (智慧雙棲版)</title>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
@@ -183,6 +183,7 @@
 <div class="container">
     <header>
         <h1>114學年度--數學領域教師研習次數記錄系統</h1>
+        <p>【雲端自動同步 ｜ 跨平台智慧響應版】</p>
     </header>
 
     <div class="status-zone">
@@ -246,3 +247,186 @@
             .then(buffer => {
                 const data = new Uint8Array(buffer);
                 const workbook = XLSX.read(data, { type: 'array' });
+                
+                const sheetRecords = XLSX.utils.sheet_to_json(workbook.Sheets["研習紀錄"] || workbook.Sheets[workbook.SheetNames[0]]);
+                const sheetTeachers = XLSX.utils.sheet_to_json(workbook.Sheets["教師名稱"] || workbook.Sheets[workbook.SheetNames[1]]);
+                
+                mergeSheetsToSystemData(sheetTeachers, sheetRecords);
+
+                // 成功同步後，顯示洗鍊的文字狀態
+                document.getElementById('file-status').textContent = `成功同步雲端資料...`;
+                document.getElementById('file-status').className = "status-badge loaded";
+                document.getElementById('main-content').style.display = "block";
+
+                refreshUI();
+            })
+            .catch(error => {
+                console.error(error);
+                document.getElementById('file-status').textContent = `連線失敗：${error.message}`;
+                document.getElementById('file-status').className = "status-badge error";
+            });
+    });
+
+    function mergeSheetsToSystemData(teachers, records) {
+        seminarData = teachers.map(t => {
+            const id = String(t["職碼"] || "").trim();
+            const name = String(t["姓名"] || "").trim();
+            const prevCount = parseInt(t["歷史截止累計"]) || 0;
+
+            const matchedRecords = records.filter(r => String(r["姓名"] || "").trim() === name).map(r => ({
+                date: String(r["研習日期"] || "").trim(),
+                item: String(r["研習天數"] || r["研習天數項目"] || "").trim(),
+                hours: String(r["研習時數"] || "").trim(),
+                count: parseInt(r["採計次數"]) || 0,
+                document: String(r["研習公文"] || "").trim()
+            })).filter(r => r.date !== "");
+
+            return { id, name, prevCount, records: matchedRecords };
+        }).filter(t => t.id !== "");
+    }
+
+    function openDoc(imgFileName) {
+        if (!imgFileName) return;
+        const overlay = document.getElementById('doc-overlay');
+        const fullImage = document.getElementById('full-doc-image');
+        fullImage.src = 'docs/' + imgFileName;
+        overlay.classList.add('active');
+    }
+
+    function closeDoc() {
+        const overlay = document.getElementById('doc-overlay');
+        overlay.classList.remove('active');
+        setTimeout(() => {
+            document.getElementById('full-doc-image').src = '';
+        }, 200);
+    }
+
+    function refreshUI() {
+        renderOverviewTable();
+        populateTeacherSelect();
+        
+        const select = document.getElementById('teacher-select');
+        if (select.options.length > 0) {
+            renderPersonalDetail(select.value);
+        }
+    }
+
+    function switchView(viewType) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+
+        if(viewType === 'overview') {
+            document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            document.getElementById('overview-view').classList.add('active');
+        } else {
+            document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            document.getElementById('personal-view').classList.add('active');
+        }
+    }
+
+    function calculateNewCount(records) {
+        return records.reduce((sum, record) => sum + record.count, 0);
+    }
+
+    function renderOverviewTable() {
+        const tbody = document.getElementById('overview-tbody');
+        tbody.innerHTML = '';
+
+        seminarData.forEach(teacher => {
+            const newCount = calculateNewCount(teacher.records);
+            const totalCount = teacher.prevCount + newCount;
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><strong>${teacher.id}</strong></td>
+                <td><strong>${teacher.name}</strong></td>
+                <td>${teacher.prevCount} 次</td>
+                <td>+${newCount} 次</td>
+                <td><span class="final-count">${totalCount} 次</span></td>
+                <td>
+                    <button class="btn-view" onclick="viewTeacherDetail('${teacher.id}')">檢視</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function populateTeacherSelect() {
+        const select = document.getElementById('teacher-select');
+        const currentSelectedValue = select.value;
+        select.innerHTML = '';
+        
+        seminarData.forEach(teacher => {
+            const option = document.createElement('option');
+            option.value = teacher.id;
+            option.textContent = `職碼 ${teacher.id} - ${teacher.name}`;
+            select.appendChild(option);
+        });
+
+        if (seminarData.some(t => t.id === currentSelectedValue)) {
+            select.value = currentSelectedValue;
+        }
+    }
+
+    function viewTeacherDetail(teacherId) {
+        document.getElementById('teacher-select').value = teacherId;
+        renderPersonalDetail(teacherId);
+        switchView('personal');
+    }
+
+    function renderPersonalDetail(teacherId) {
+        const teacher = seminarData.find(t => t.id === teacherId);
+        const contentDiv = document.getElementById('personal-content');
+        if (!teacher) { contentDiv.innerHTML = ''; return; }
+
+        const newCount = calculateNewCount(teacher.records);
+        const totalCount = teacher.prevCount + newCount;
+
+        let recordsRows = '';
+        if(teacher.records.length === 0) {
+            recordsRows = `<tr><td colspan="5" class="no-data">目前無任何研習明細紀錄</td></tr>`;
+        } else {
+            teacher.records.forEach(r => {
+                let docContent = '---';
+                if (r.document) {
+                    docContent = `<img src="docs/${r.document}" alt="公文預覽" class="doc-thumbnail" onclick="openDoc('${r.document}')">`;
+                }
+
+                recordsRows += `
+                    <tr>
+                        <td><strong>${r.date}</strong></td>
+                        <td>${r.item}</td>
+                        <td>${r.hours}</td>
+                        <td><strong>+${r.count} 次</strong></td>
+                        <td>${docContent}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        contentDiv.innerHTML = `
+            <div class="summary-box">
+                <div class="summary-card"><h4>教師姓名</h4><p>${teacher.name}</p></div>
+                <div class="summary-card"><h4>截止累計</h4><p>${teacher.prevCount}</p></div>
+                <div class="summary-card"><h4>本年新增</h4><p style="color: var(--accent-blue);">+${newCount}</p></div>
+                <div class="summary-card"><h4>總次數</h4><p style="color: var(--accent-gold);">${totalCount}</p></div>
+            </div>
+            <div class="history-title">本學年度研習明細</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>研習日期</th>
+                        <th>研習天數</th>
+                        <th>研習時數</th>
+                        <th>採計次數</th>
+                        <th style="color: var(--danger-red);">研習公文 (點圖)</th>
+                    </tr>
+                </thead>
+                <tbody>${recordsRows}</tbody>
+            </table>
+        `;
+    }
+</script>
+
+</body>
+</html>
