@@ -280,18 +280,19 @@
                 hours: String(r["研習時數"] || "").trim(),
                 count: parseInt(r["採計次數"]) || 0,
                 document: String(r["研習公文"] || "").trim(),
-                resultDoc: String(r["研習結果"] || "").trim() // 💡 讀取全新的研習結果欄位
+                resultDoc: String(r["研習結果"] || "").trim() 
             })).filter(r => r.date !== "");
 
             return { id, name, prevCount, records: matchedRecords };
         }).filter(t => t.id !== "");
     }
 
-    function openDoc(imgFileName) {
+    // 💡 燈箱點擊開啟邏輯：根據傳入的 folder 參數動態決定抓 docs/ 還是 docs_result/
+    function openDoc(folder, imgFileName) {
         if (!imgFileName) return;
         const overlay = document.getElementById('doc-overlay');
         const fullImage = document.getElementById('full-doc-image');
-        fullImage.src = 'docs/' + imgFileName;
+        fullImage.src = folder + '/' + imgFileName;
         overlay.classList.add('active');
     }
 
@@ -389,16 +390,16 @@
             recordsRows = `<tr><td colspan="6" class="no-data">目前無任何研習明細紀錄</td></tr>`;
         } else {
             teacher.records.forEach(r => {
-                // 研習公文預覽邏輯
+                // 研習公文預覽邏輯 - 讀取自 docs/
                 let docContent = '---';
                 if (r.document) {
-                    docContent = `<img src="docs/${r.document}" alt="公文預覽" class="doc-thumbnail" onclick="openDoc('${r.document}')">`;
+                    docContent = `<img src="docs/${r.document}" alt="公文預覽" class="doc-thumbnail" onclick="openDoc('docs', '${r.document}')">`;
                 }
 
-                // 💡 研習結果（時數證明）預覽邏輯
+                // 💡 研習結果預覽邏輯 - 已修改路徑為讀取自全新的資料夾 docs_result/
                 let resultDocContent = '---';
                 if (r.resultDoc) {
-                    resultDocContent = `<img src="docs/${r.resultDoc}" alt="結果驗證" class="doc-thumbnail" onclick="openDoc('${r.resultDoc}')">`;
+                    resultDocContent = `<img src="docs_result/${r.resultDoc}" alt="結果驗證" class="doc-thumbnail" onclick="openDoc('docs_result', '${r.resultDoc}')">`;
                 }
 
                 recordsRows += `
