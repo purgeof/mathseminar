@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>114學年度數學領域教師研習次數記錄系統 (緊湊大字置中版)</title>
+    <title>114學年度數學領域教師研習次數記錄系統 (自動載入版)</title>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
@@ -34,21 +34,20 @@
         header h1 { color: var(--primary-color); font-size: 28px; margin-bottom: 4px; font-weight: bold; }
         header p { font-size: 18px; color: #718096; }
         
-        /* 檔案讀取區 */
-        .file-zone {
+        /* 狀態提示區 */
+        .status-zone {
             background: #ebf8ff;
             border: 2px dashed #90cdf4;
-            padding: 20px;
+            padding: 15px;
             text-align: center;
             border-radius: 8px;
             margin-bottom: 15px;
-            cursor: pointer;
-            transition: all 0.2s;
         }
-        .file-zone:hover { background: #dee3f3; border-color: var(--secondary-color); }
-        .file-zone p { color: #2b6cb0; font-weight: bold; font-size: 21px; margin-bottom: 5px; }
-        .status-badge { display: inline-block; padding: 4px 12px; background: #cbd5e1; color: #475569; border-radius: 20px; font-size: 16px; margin-top: 5px; font-weight: bold; }
+        .status-zone p { color: #2b6cb0; font-weight: bold; font-size: 20px; margin-bottom: 5px; }
+        .status-badge { display: inline-block; padding: 4px 12px; background: #cbd5e1; color: #475569; border-radius: 20px; font-size: 16px; font-weight: bold; }
+        .status-badge.loading { background: #feebc8; color: #c05621; }
         .status-badge.loaded { background: var(--success-color); color: white; }
+        .status-badge.error { background: var(--danger-color); color: white; }
 
         /* 內容呈現區 */
         .main-content { display: none; margin-top: 10px; }
@@ -62,7 +61,7 @@
         .view-section.active { display: block; }
         .view-section h3 { font-size: 22px; color: var(--primary-color); margin-bottom: 12px; border-bottom: 2px solid var(--border-color); padding-bottom: 6px; }
 
-        /* 表格排版：修改 text-align 為 center 達成全欄位置中 */
+        /* 表格排版置中 */
         table { width: 100%; border-collapse: collapse; margin-top: 5px; text-align: center; }
         th, td { padding: 8px 14px; border-bottom: 1px solid var(--border-color); font-size: 20px; text-align: center; vertical-align: middle; }
         th { background-color: #f1f5f9; color: var(--primary-color); font-weight: bold; font-size: 20px; }
@@ -87,9 +86,9 @@
         .btn-view { padding: 6px 14px; background-color: var(--secondary-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 17px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: inline-block; }
         .btn-view:hover { background-color: #2980b9; }
 
-        /* 公文圖片預覽小圖樣式：置中對齊調整 */
+        /* 公文圖片預覽小圖樣式 */
         .doc-thumbnail {
-            display: inline-block; /* 改為 inline-block 配合表格置中 */
+            display: inline-block;
             height: 40px; 
             width: auto;
             border-radius: 4px;
@@ -105,7 +104,7 @@
             border-color: var(--secondary-color);
         }
         
-        /* 全螢幕燈箱大圖瀏覽疊加層 */
+        /* 全螢幕燈箱 */
         .overlay {
             display: none;
             position: fixed;
@@ -124,8 +123,6 @@
             display: flex;
             opacity: 1;
         }
-
-        /* 燈箱大圖樣式 */
         .full-doc-image {
             max-width: 90%;
             max-height: 90%;
@@ -135,8 +132,6 @@
             object-fit: contain;
             cursor: pointer;
         }
-
-        /* 燈箱關閉按鈕 */
         .overlay-close-btn {
             position: absolute;
             top: 15px;
@@ -145,12 +140,9 @@
             font-size: 40px;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.2s;
             z-index: 10000;
         }
-        .overlay-close-btn:hover {
-            color: var(--success-color);
-        }
+        .overlay-close-btn:hover { color: var(--success-color); }
     </style>
 </head>
 <body>
@@ -158,13 +150,12 @@
 <div class="container">
     <header>
         <h1>114學年度--數學領域教師研習次數記錄系統</h1>
-        <p>【純讀取大字緊湊版】緊湊排版 ｜ 欄位全面置中對齊</p>
+        <p>【雲端連線自動版】網頁打開即自動與雲端 Excel 同步</p>
     </header>
 
-    <div class="file-zone" onclick="document.getElementById('excel-file-input').click()">
-        <p>📂 點擊此處，選擇您的 Excel 資料表載入檢視</p>
-        <span id="file-status" class="status-badge">尚未載入任何 Excel 檔案</span>
-        <input type="file" id="excel-file-input" accept=".xlsx, .xls" onchange="handleFileSelect(event)">
+    <div class="status-zone">
+        <p>🌐 雲端資料庫連線狀態</p>
+        <span id="file-status" class="status-badge loading">正在連線至雲端 Excel 檔案...</span>
     </div>
 
     <div class="main-content" id="main-content">
@@ -210,30 +201,39 @@
 
 <script>
     let seminarData = [];
+    // 這裡設定您在 GitHub 上的 Excel 檔名
+    const excelFileName = '114_teacher_record.xlsx';
 
-    // 讀取 Excel 檔案
-    function handleFileSelect(event) {
-        const file = event.target.files[0];
-        if (!file) return;
+    // 網頁開啟時，自動去讀取同一個資料夾底下的 Excel 檔案
+    window.addEventListener('DOMContentLoaded', (event) => {
+        fetch(excelFileName)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('找不到 Excel 檔案，請確認檔案名稱是否正確。');
+                }
+                return response.arrayBuffer();
+            })
+            .then(buffer => {
+                const data = new Uint8Array(buffer);
+                const workbook = XLSX.read(data, { type: 'array' });
+                
+                const sheetRecords = XLSX.utils.sheet_to_json(workbook.Sheets["研習紀錄"] || workbook.Sheets[workbook.SheetNames[0]]);
+                const sheetTeachers = XLSX.utils.sheet_to_json(workbook.Sheets["教師名稱"] || workbook.Sheets[workbook.SheetNames[1]]);
+                
+                mergeSheetsToSystemData(sheetTeachers, sheetRecords);
 
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, { type: 'array' });
-            
-            const sheetRecords = XLSX.utils.sheet_to_json(workbook.Sheets["研習紀錄"] || workbook.Sheets[workbook.SheetNames[0]]);
-            const sheetTeachers = XLSX.utils.sheet_to_json(workbook.Sheets["教師名稱"] || workbook.Sheets[workbook.SheetNames[1]]);
-            
-            mergeSheetsToSystemData(sheetTeachers, sheetRecords);
+                document.getElementById('file-status').textContent = `成功同步雲端資料：${excelFileName}`;
+                document.getElementById('file-status').className = "status-badge loaded";
+                document.getElementById('main-content').style.display = "block";
 
-            document.getElementById('file-status').textContent = `成功載入檔案：${file.name}`;
-            document.getElementById('file-status').className = "status-badge loaded";
-            document.getElementById('main-content').style.display = "block";
-
-            refreshUI();
-        };
-        reader.readAsArrayBuffer(file);
-    }
+                refreshUI();
+            })
+            .catch(error => {
+                console.error(error);
+                document.getElementById('file-status').textContent = `連線失敗：${error.message}`;
+                document.getElementById('file-status').className = "status-badge error";
+            });
+    });
 
     // 核心配對邏輯
     function mergeSheetsToSystemData(teachers, records) {
