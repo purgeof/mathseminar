@@ -38,19 +38,19 @@
         body { background-color: var(--primary-bg); color: var(--text-main); line-height: 1.5; padding: 15px; }
         .container { max-width: 1200px; margin: 0 auto; }
         
-        /* 標題區 */
-        header { text-align: center; margin-bottom: 15px; background: var(--header-bg); padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid var(--border-color); }
-        header h1 { color: var(--text-on-primary); font-size: 28px; margin-bottom: 4px; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        /* 標題區 - 💡 已縮小上下留白 */
+        header { text-align: center; margin-bottom: 10px; background: var(--header-bg); padding: 10px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid var(--border-color); }
+        header h1 { color: var(--text-on-primary); font-size: 28px; margin-bottom: 2px; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         header p { font-size: 18px; color: var(--text-muted); }
         
-        /* 雲端連線狀態提示區 */
+        /* 雲端連線狀態提示區 - 💡 已縮小間距 */
         .status-zone {
             background: rgba(52, 152, 219, 0.08); 
             border: 2px dashed rgba(52, 152, 219, 0.4);
-            padding: 12px;
+            padding: 8px;
             text-align: center;
             border-radius: 8px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         .status-zone p { color: var(--accent-blue); font-weight: bold; font-size: 22px; margin-bottom: 5px; }
         .status-badge { display: inline-block; padding: 4px 12px; background: #444; color: var(--text-main); border-radius: 20px; font-size: 18px; font-weight: bold; }
@@ -66,14 +66,14 @@
         .tab-btn { flex: 1; text-align: center; padding: 12px 15px; background: #333; border: none; border-radius: 6px; cursor: pointer; font-size: 22px; font-weight: bold; color: var(--text-main); transition: all 0.2s; }
         .tab-btn.active { background: var(--accent-blue); color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
 
-        /* 內容卡片區 */
-        .view-section { background: var(--card-bg); padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid var(--border-color); display: none; }
+        /* 內容卡片區 - 💡 緊湊內襯 */
+        .view-section { background: var(--card-bg); padding: 12px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid var(--border-color); display: none; }
         .view-section.active { display: block; }
-        .view-section h3 { font-size: 24px; color: var(--text-main); margin-bottom: 12px; border-bottom: 2px solid var(--border-color); padding-bottom: 6px; font-weight: bold; }
+        .view-section h3 { font-size: 24px; color: var(--text-main); margin-bottom: 8px; border-bottom: 2px solid var(--border-color); padding-bottom: 4px; font-weight: bold; }
 
-        /* 表格排版：全置中與大字體樣式 */
-        table { width: 100%; border-collapse: collapse; margin-top: 5px; text-align: center; }
-        th, td { padding: 14px 10px; border-bottom: 1px solid var(--border-color); font-size: 22px; text-align: center; vertical-align: middle; color: var(--text-main); }
+        /* 表格排版：💡 padding 從 14px 縮小至 8px，緊湊不擁擠 */
+        table { width: 100%; border-collapse: collapse; margin-top: 2px; text-align: center; }
+        th, td { padding: 8px 6px; border-bottom: 1px solid var(--border-color); font-size: 22px; text-align: center; vertical-align: middle; color: var(--text-main); }
         th { background-color: var(--table-header-bg); color: var(--text-main); font-weight: bold; font-size: 22px; } 
         tr:hover { background-color: rgba(255, 255, 255, 0.02); } 
         td strong { font-size: 22px; color: var(--text-on-primary); }
