@@ -26,7 +26,7 @@
             --overlay-bg: rgba(0, 0, 0, 0.95); 
         }
 
-        /* 基礎全域大字體設定 */
+        /* 基礎全域大字體設定 - 💡 已全面放大至 22px */
         * { 
             box-sizing: border-box; 
             margin: 0; 
@@ -35,72 +35,73 @@
             font-size: 22px; 
             -webkit-font-smoothing: antialiased; 
         }
-        body { background-color: var(--primary-bg); color: var(--text-main); line-height: 1.4; padding: 10px; }
+        body { background-color: var(--primary-bg); color: var(--text-main); line-height: 1.5; padding: 15px; }
         .container { max-width: 1200px; margin: 0 auto; }
         
-        /* 標題區 - 💡 已縮小上下留白 */
-        header { text-align: center; margin-bottom: 10px; background: var(--header-bg); padding: 10px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid var(--border-color); }
-        header h1 { color: var(--text-on-primary); font-size: 28px; margin-bottom: 2px; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        /* 標題區 */
+        header { text-align: center; margin-bottom: 15px; background: var(--header-bg); padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid var(--border-color); }
+        header h1 { color: var(--text-on-primary); font-size: 28px; margin-bottom: 4px; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         header p { font-size: 18px; color: var(--text-muted); }
         
-        /* 雲端連線狀態提示區 - 💡 已縮小間距 */
+        /* 雲端連線狀態提示區 */
         .status-zone {
             background: rgba(52, 152, 219, 0.08); 
             border: 2px dashed rgba(52, 152, 219, 0.4);
-            padding: 8px;
+            padding: 12px;
             text-align: center;
             border-radius: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
-        .status-zone p { color: var(--accent-blue); font-weight: bold; font-size: 22px; margin-bottom: 3px; }
-        .status-badge { display: inline-block; padding: 3px 12px; background: #444; color: var(--text-main); border-radius: 20px; font-size: 18px; font-weight: bold; }
+        .status-zone p { color: var(--accent-blue); font-weight: bold; font-size: 22px; margin-bottom: 5px; }
+        .status-badge { display: inline-block; padding: 4px 12px; background: #444; color: var(--text-main); border-radius: 20px; font-size: 18px; font-weight: bold; }
+        .status-badge.loading { background: rgba(243, 156, 18, 0.2); color: var(--accent-gold); }
         .status-badge.loaded { background: var(--success-green); color: white; }
         .status-badge.error { background: var(--danger-red); color: white; }
 
         /* 內容呈現區 */
-        .main-content { display: none; margin-top: 5px; }
-        .nav-tabs { display: flex; gap: 10px; margin-bottom: 10px; }
+        .main-content { display: none; margin-top: 10px; }
+        .nav-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
         
         /* 頁籤按鈕 */
-        .tab-btn { flex: 1; text-align: center; padding: 10px 15px; background: #333; border: none; border-radius: 6px; cursor: pointer; font-size: 22px; font-weight: bold; color: var(--text-main); transition: all 0.2s; }
+        .tab-btn { flex: 1; text-align: center; padding: 12px 15px; background: #333; border: none; border-radius: 6px; cursor: pointer; font-size: 22px; font-weight: bold; color: var(--text-main); transition: all 0.2s; }
         .tab-btn.active { background: var(--accent-blue); color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
 
-        /* 內容卡片區 - 💡 緊湊內襯 */
-        .view-section { background: var(--card-bg); padding: 12px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid var(--border-color); display: none; }
+        /* 內容卡片區 */
+        .view-section { background: var(--card-bg); padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid var(--border-color); display: none; }
         .view-section.active { display: block; }
-        .view-section h3 { font-size: 24px; color: var(--text-main); margin-bottom: 8px; border-bottom: 2px solid var(--border-color); padding-bottom: 4px; font-weight: bold; }
+        .view-section h3 { font-size: 24px; color: var(--text-main); margin-bottom: 12px; border-bottom: 2px solid var(--border-color); padding-bottom: 6px; font-weight: bold; }
 
-        /* 表格排版：💡 padding 從 14px 縮小至 8px，緊湊不擁擠 */
-        table { width: 100%; border-collapse: collapse; margin-top: 2px; text-align: center; }
-        th, td { padding: 8px 6px; border-bottom: 1px solid var(--border-color); font-size: 22px; text-align: center; vertical-align: middle; color: var(--text-main); }
+        /* 表格排版：全置中與大字體樣式 */
+        table { width: 100%; border-collapse: collapse; margin-top: 5px; text-align: center; }
+        th, td { padding: 14px 10px; border-bottom: 1px solid var(--border-color); font-size: 22px; text-align: center; vertical-align: middle; color: var(--text-main); }
         th { background-color: var(--table-header-bg); color: var(--text-main); font-weight: bold; font-size: 22px; } 
         tr:hover { background-color: rgba(255, 255, 255, 0.02); } 
         td strong { font-size: 22px; color: var(--text-on-primary); }
         
-        /* 黃色最終累計次數 */
+        /* 💡 黃色最終累計次數 - 已特別加大至 25px */
         .final-count { color: var(--accent-gold); font-weight: bold; font-size: 25px; } 
 
         /* 個人紀錄下拉選單 */
-        .personal-select-wrapper { margin-bottom: 10px; display: flex; flex-direction: column; gap: 6px; }
+        .personal-select-wrapper { margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; }
         .personal-select-wrapper label { font-size: 22px; font-weight: bold; color: var(--text-main); }
-        select { width: 100%; padding: 8px 16px; font-size: 22px; font-weight: bold; border-radius: 6px; border: 2px solid var(--accent-blue); outline: none; background: var(--card-bg); color: var(--text-main); cursor: pointer; }
+        select { width: 100%; padding: 10px 16px; font-size: 22px; font-weight: bold; border-radius: 6px; border: 2px solid var(--accent-blue); outline: none; background: var(--card-bg); color: var(--text-main); cursor: pointer; }
         
         /* 個人摘要統計卡片 */
-        .summary-box { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 10px; }
-        .summary-card { background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px; text-align: center; border: 1px solid var(--border-color); }
+        .summary-box { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
+        .summary-card { background: rgba(255,255,255,0.02); padding: 10px; border-radius: 6px; text-align: center; border: 1px solid var(--border-color); }
         .summary-card h4 { font-size: 16px; color: var(--text-muted); margin-bottom: 2px; font-weight: bold; }
         .summary-card p { font-size: 26px; font-weight: bold; color: var(--text-on-primary); }
         
-        .history-title { margin: 10px 0 6px 0; font-size: 24px; font-weight: bold; color: var(--text-main); border-left: 5px solid var(--accent-blue); padding-left: 10px; line-height: 1.3; }
-        .no-data { color: var(--text-muted); text-align: center; padding: 15px; font-size: 22px; }
+        .history-title { margin: 15px 0 8px 0; font-size: 24px; font-weight: bold; color: var(--text-main); border-left: 5px solid var(--accent-blue); padding-left: 10px; line-height: 1.3; }
+        .no-data { color: var(--text-muted); text-align: center; padding: 20px; font-size: 22px; }
         
         /* 檢視按鈕 */
-        .btn-view { padding: 5px 14px; background-color: var(--accent-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.3); display: inline-block; }
+        .btn-view { padding: 8px 16px; background-color: var(--accent-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.3); display: inline-block; }
 
         /* 公文圖片預覽小圖 */
         .doc-thumbnail {
             display: inline-block;
-            height: 45px; 
+            height: 50px; 
             width: auto;
             border-radius: 4px;
             cursor: pointer;
@@ -146,13 +147,13 @@
             cursor: pointer;
         }
 
-        /* 手機與平板專屬 RWD */
+        /* 📱 手機與平板專屬 RWD 自動排版隱藏設定 (維持小螢幕防擠壓邏輯) */
         @media (max-width: 768px) {
-            body { padding: 6px; }
-            header { padding: 10px 8px; margin-bottom: 8px; }
+            body { padding: 8px; }
+            header { padding: 12px 10px; margin-bottom: 10px; }
             header h1 { font-size: 22px; }
             header p { font-size: 16px; }
-            th, td { font-size: 19px; padding: 8px 4px; }
+            th, td { font-size: 19px; padding: 10px 4px; }
             
             table th:nth-child(1), table td:nth-child(1),
             table th:nth-child(3), table td:nth-child(3),
@@ -166,15 +167,15 @@
             }
 
             .final-count { font-size: 20px; }
-            .btn-view { padding: 5px 8px; font-size: 18px; }
+            .btn-view { padding: 6px 10px; font-size: 18px; }
         }
 
-        /* 電腦端展開優化 */
+        /* 💻 當螢幕寬度大於 768px 展開優化 */
         @media (min-width: 769px) {
             .personal-select-wrapper { flex-direction: row; }
             .summary-box { grid-template-columns: repeat(4, 1fr); }
             header h1 { font-size: 32px; }
-            th, td { font-size: 22px; padding: 10px 12px; }
+            th, td { font-size: 22px; padding: 14px 16px; }
         }
     </style>
 </head>
