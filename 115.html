@@ -380,9 +380,9 @@
             tr.innerHTML = `
                 <td><strong>${teacher.id}</strong></td>
                 <td><strong>${teacher.name}</strong></td>
-                <td>${teacher.prevCount} 次</td>
-                <td>+${newCount} 次</td>
-                <td><span class="final-count">${totalCount} 次</span></td>
+                <td>${teacher.prevCount}</td>
+                <td>+${newCount} </td>
+                <td><span class="final-count">${totalCount} </span></td>
                 <td>
                     <button class="btn-view" onclick="viewTeacherDetail('${teacher.id}')">檢視</button>
                 </td>
@@ -442,7 +442,7 @@
                         <td><strong>${r.date}</strong></td>
                         <td>${r.item}</td>
                         <td>${r.hours}</td>
-                        <td><strong>+${r.count} 次</strong></td>
+                        <td><strong>+${r.count} </strong></td>
                         <td>${docContent}</td>
                         <td>${resultDocContent}</td>
                     </tr>
@@ -453,8 +453,8 @@
         contentDiv.innerHTML = `
             <div class="summary-box">
                 <div class="summary-card"><h4>研習人員</h4><p>${teacher.name}</p></div>
-                <div class="summary-card"><h4>去年累計</h4><p>${teacher.prevCount}</p></div>
-                <div class="summary-card"><h4>今年新增</h4><p style="color: var(--accent-blue);">+${newCount}</p></div>
+                <div class="summary-card"><h4>去年累計</h4><p>${teacher.prevCount}次</p></div>
+                <div class="summary-card"><h4>今年新增</h4><p style="color: var(--accent-blue);">+${newCount}次</p></div>
                 <div class="summary-box-card" style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px; text-align: center; border: 1px solid var(--border-color);"><h4>總次數</h4><p style="color: var(--accent-gold);">${totalCount}</p></div>
             </div>
             <div class="history-title">今年研習明細</div>
