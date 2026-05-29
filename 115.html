@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>114學年--教師研習次數記錄</title>
+    <title>114學年度數學領域教師研習次數記錄系統 (智慧雙棲版)</title>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
@@ -146,28 +146,33 @@
             cursor: pointer;
         }
 
-        /* 手機與平板專屬 RWD */
+        /* =================================================== */
+        /* ✨ 手機與平板專屬 RWD (已校正精準欄位隱藏邏輯) ✨ */
+        /* =================================================== */
         @media (max-width: 768px) {
             body { padding: 6px; }
             header { padding: 10px 8px; margin-bottom: 8px; }
             header h1 { font-size: 22px; }
             header p { font-size: 16px; }
-            th, td { font-size: 19px; padding: 8px 4px; }
+            th, td { font-size: 18px; padding: 6px 4px; }
             
-            table th:nth-child(1), table td:nth-child(1),
-            table th:nth-child(3), table td:nth-child(3),
-            table th:nth-child(4), table td:nth-child(4) {
+            /* 【全體總覽表格手機優化】隱藏：第1欄(職碼)、第3欄(截止累計)、第4欄(本年新增) */
+            #overview-view table th:nth-child(1), #overview-view table td:nth-child(1),
+            #overview-view table th:nth-child(3), #overview-view table td:nth-child(3),
+            #overview-view table th:nth-child(4), #overview-view table td:nth-child(4) {
                 display: none;
             }
             
+            /* 【個人明細表格手機優化】僅隱藏：第2欄(研習天數)、第3欄(研習時數) */
+            /* 保留最關鍵的：研習日期(1)、採計次數(4)、研習公文(5)、研習結果(6) */
             #personal-content table th:nth-child(2), #personal-content table td:nth-child(2),
-            #personal-content table th:nth-child(3), #personal-content table td:nth-child(3),
-            #personal-content table th:nth-child(5), #personal-content table td:nth-child(5) {
+            #personal-content table th:nth-child(3), #personal-content table td:nth-child(3) {
                 display: none;
             }
 
             .final-count { font-size: 20px; }
             .btn-view { padding: 5px 8px; font-size: 18px; }
+            .doc-thumbnail { height: 40px; } /* 縮小手機端小圖尺寸 */
         }
 
         /* 電腦端展開優化 */
@@ -183,12 +188,13 @@
 
 <div class="container">
     <header>
-        <h1>114學年度--研習次數記錄</h1>
+        <h1>114學年度--數學領域教師研習次數記錄系統</h1>
+        <p>【雲端自動同步 ｜ 跨平台智慧響應版】</p>
     </header>
 
     <div class="status-zone">
-        <p>🌐 資料庫連線狀態...</p>
-        <span id="file-status" class="status-badge loading">正在連線至資料庫...</span>
+        <p>🌐 雲端資料庫連線狀態</p>
+        <span id="file-status" class="status-badge loading">正在連線至雲端資料庫...</span>
     </div>
 
     <div class="main-content" id="main-content">
@@ -253,7 +259,7 @@
                 
                 mergeSheetsToSystemData(sheetTeachers, sheetRecords);
 
-                // 成功同步後，顯示洗鍊的文字狀態
+                // 成功同步後
                 document.getElementById('file-status').textContent = `成功同步雲端資料...`;
                 document.getElementById('file-status').className = "status-badge loaded";
                 document.getElementById('main-content').style.display = "block";
@@ -286,7 +292,6 @@
         }).filter(t => t.id !== "");
     }
 
-    // 💡 燈箱點擊開啟邏輯：根據傳入的 folder 參數動態決定抓 docs/ 還是 docs_result/
     function openDoc(folder, imgFileName) {
         if (!imgFileName) return;
         const overlay = document.getElementById('doc-overlay');
@@ -389,16 +394,14 @@
             recordsRows = `<tr><td colspan="6" class="no-data">目前無任何研習明細紀錄</td></tr>`;
         } else {
             teacher.records.forEach(r => {
-                // 研習公文預覽邏輯 - 讀取自 docs/
                 let docContent = '---';
                 if (r.document) {
                     docContent = `<img src="docs/${r.document}" alt="公文預覽" class="doc-thumbnail" onclick="openDoc('docs', '${r.document}')">`;
                 }
 
-                // 💡 研習結果預覽邏輯 - 已修改路徑為讀取自全新的資料夾 docs_result/
                 let resultDocContent = '---';
                 if (r.resultDoc) {
-                    resultDocContent = `<img src="docs_result/${r.resultDoc}" alt="結果驗證" class="doc-thumbnail" onclick="openDoc('docs_result', '${r.resultDoc}')">`;
+                    resultDocContent = `<img src="docs_result/${r.resultDoc}" alt="驗證照片" class="doc-thumbnail" onclick="openDoc('docs_result', '${r.resultDoc}')">`;
                 }
 
                 recordsRows += `
@@ -419,7 +422,7 @@
                 <div class="summary-card"><h4>教師姓名</h4><p>${teacher.name}</p></div>
                 <div class="summary-card"><h4>截止累計</h4><p>${teacher.prevCount}</p></div>
                 <div class="summary-card"><h4>本年新增</h4><p style="color: var(--accent-blue);">+${newCount}</p></div>
-                <div class="summary-card"><h4>總次數</h4><p style="color: var(--accent-gold);">${totalCount}</p></div>
+                <div class="summary-box-card" style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px; text-align: center; border: 1px solid var(--border-color);"><h4>總次數</h4><p style="color: var(--accent-gold);">${totalCount}</p></div>
             </div>
             <div class="history-title">本學年度研習明細</div>
             <table>
@@ -429,8 +432,8 @@
                         <th>研習天數</th>
                         <th>研習時數</th>
                         <th>採計次數</th>
-                        <th style="color: var(--danger-red);">研習公文 (點圖)</th>
-                        <th style="color: var(--success-green);">研習結果 (驗證)</th>
+                        <th style="color: var(--danger-red);">研習公文</th>
+                        <th style="color: var(--success-green);">研習結果</th>
                     </tr>
                 </thead>
                 <tbody>${recordsRows}</tbody>
