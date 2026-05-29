@@ -225,7 +225,7 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>職碼</th>
+                            <th>序號</th>
                             <th>姓名</th>
                             <th>114/6/30<BR>截止累計</th>
                             <th>今年<BR>新增次數</th>
@@ -409,7 +409,7 @@
 
         let recordsRows = '';
         if(teacher.records.length === 0) {
-            recordsRows = `<tr><td colspan="6" class="no-data">目前無任何研習明細紀錄</td></tr>`;
+            recordsRows = `<tr><td colspan="6" class="no-data">目前無研習明細紀錄</td></tr>`;
         } else {
             teacher.records.forEach(r => {
                 let docContent = '---';
