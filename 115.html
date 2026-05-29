@@ -26,7 +26,7 @@
             --overlay-bg: rgba(0, 0, 0, 0.95); 
         }
 
-        /* 基礎全域大字體設定 */
+        /* 基礎全域大字體設定 (電腦端維持 22px) */
         * { 
             box-sizing: border-box; 
             margin: 0; 
@@ -147,14 +147,28 @@
         }
 
         /* =================================================== */
-        /* ✨ 手機與平板專屬 RWD 微調（縮圖圓形化與排版優化） ✨ */
+        /* ✨ 手機與平板專屬 RWD (已將手機版字體微調為 20px) ✨ */
         /* =================================================== */
         @media (max-width: 768px) {
             body { padding: 6px; }
             header { padding: 10px 8px; margin-bottom: 8px; }
             header h1 { font-size: 22px; }
             header p { font-size: 16px; }
-            th, td { font-size: 18px; padding: 6px 4px; }
+            
+            /* 🎯 將手機版全局、表格與按鈕字體調降至 20px 進行測試 */
+            * { font-size: 20px; }
+            th, td { font-size: 20px; padding: 6px 4px; }
+            td strong { font-size: 20px; }
+            .tab-btn { font-size: 20px; padding: 8px 10px; }
+            .view-section h3 { font-size: 22px; }
+            .status-zone p { font-size: 20px; }
+            .status-badge { font-size: 16px; }
+            select { font-size: 20px; padding: 6px 12px; }
+            .summary-card p { font-size: 24px; }
+            .summary-card h4 { font-size: 15px; }
+            .history-title { font-size: 22px; }
+            .final-count { font-size: 20px; }
+            .btn-view { padding: 5px 8px; font-size: 18px; }
             
             /* 全體總覽表格手機優化：隱藏不必要欄位 */
             #overview-view table th:nth-child(1), #overview-view table td:nth-child(1),
@@ -169,15 +183,12 @@
                 display: none;
             }
 
-            .final-count { font-size: 20px; }
-            .btn-view { padding: 5px 8px; font-size: 18px; }
-            
-            /* 🎯 關鍵修改：手機端將縮圖強制裁切為精緻的圓形鈕，拒絕長條圖撐開欄位 */
+            /* 手機端圓形縮圖鈕 */
             .doc-thumbnail { 
                 width: 40px; 
                 height: 40px; 
-                object-fit: cover;      /* 確保圖片置中填滿不變形 */
-                border-radius: 50%;     /* 強制變為正圓形 */
+                object-fit: cover;      
+                border-radius: 50%;     
                 border: 2px solid var(--border-color);
                 box-shadow: 0 2px 5px rgba(0,0,0,0.5);
             }
