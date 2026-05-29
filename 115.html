@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>114學年度數學領域教師研習次數記錄系統 (智慧雙棲版)</title>
+    <title>114學年度數學領域教師研習次數記錄系統 (全欄位完整響應版)</title>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
@@ -26,7 +26,7 @@
             --overlay-bg: rgba(0, 0, 0, 0.95); 
         }
 
-        /* 基礎全域大字體設定 (電腦端維持 22px) */
+        /* 基礎全域大字體設定 (電腦端維持 22px 舒適大字) */
         * { 
             box-sizing: border-box; 
             margin: 0; 
@@ -70,9 +70,17 @@
         .view-section.active { display: block; }
         .view-section h3 { font-size: 24px; color: var(--text-main); margin-bottom: 8px; border-bottom: 2px solid var(--border-color); padding-bottom: 4px; font-weight: bold; }
 
+        /* ✨ 表格寬度防爆滾動包覆層 ✨ */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch; /* 讓手機端滑動更順暢 */
+            margin-top: 2px;
+        }
+
         /* 表格排版 */
-        table { width: 100%; border-collapse: collapse; margin-top: 2px; text-align: center; }
-        th, td { padding: 8px 6px; border-bottom: 1px solid var(--border-color); font-size: 22px; text-align: center; vertical-align: middle; color: var(--text-main); }
+        table { width: 100%; border-collapse: collapse; text-align: center; }
+        th, td { padding: 8px 6px; border-bottom: 1px solid var(--border-color); font-size: 22px; text-align: center; vertical-align: middle; color: var(--text-main); white-space: nowrap; /* 防止標題或內容亂折行 */}
         th { background-color: var(--table-header-bg); color: var(--text-main); font-weight: bold; font-size: 22px; } 
         tr:hover { background-color: rgba(255, 255, 255, 0.02); } 
         td strong { font-size: 22px; color: var(--text-on-primary); }
@@ -147,50 +155,40 @@
         }
 
         /* =================================================== */
-        /* ✨ 手機與平板專屬 RWD (已將手機版字體微調為 20px) ✨ */
+        /* ✨ 手機與平板專屬 RWD (解鎖全欄位呈現 + 16px 精細字體) ✨ */
         /* =================================================== */
         @media (max-width: 768px) {
             body { padding: 6px; }
             header { padding: 10px 8px; margin-bottom: 8px; }
-            header h1 { font-size: 22px; }
-            header p { font-size: 16px; }
+            header h1 { font-size: 20px; }
+            header p { font-size: 14px; }
             
-            /* 🎯 將手機版全局、表格與按鈕字體調降至 20px 進行測試 */
-            * { font-size: 20px; }
-            th, td { font-size: 20px; padding: 6px 4px; }
-            td strong { font-size: 20px; }
-            .tab-btn { font-size: 20px; padding: 8px 10px; }
-            .view-section h3 { font-size: 22px; }
-            .status-zone p { font-size: 20px; }
-            .status-badge { font-size: 16px; }
-            select { font-size: 20px; padding: 6px 12px; }
-            .summary-card p { font-size: 24px; }
-            .summary-card h4 { font-size: 15px; }
-            .history-title { font-size: 22px; }
-            .final-count { font-size: 20px; }
-            .btn-view { padding: 5px 8px; font-size: 18px; }
+            /* 🎯 關鍵修改：將手機版全局與表格字體調整為 16px 緊湊比例 */
+            * { font-size: 16px; }
+            th, td { font-size: 16px; padding: 6px 3px; }
+            td strong { font-size: 16px; }
+            .tab-btn { font-size: 16px; padding: 8px 6px; }
+            .view-section h3 { font-size: 18px; }
+            .status-zone p { font-size: 16px; }
+            .status-badge { font-size: 14px; }
+            select { font-size: 16px; padding: 6px 10px; }
+            .summary-card p { font-size: 20px; }
+            .summary-card h4 { font-size: 13px; }
+            .history-title { font-size: 18px; }
+            .final-count { font-size: 16px; }
+            .btn-view { padding: 4px 6px; font-size: 14px; }
             
-            /* 全體總覽表格手機優化：隱藏不必要欄位 */
-            #overview-view table th:nth-child(1), #overview-view table td:nth-child(1),
-            #overview-view table th:nth-child(3), #overview-view table td:nth-child(3),
-            #overview-view table th:nth-child(4), #overview-view table td:nth-child(4) {
-                display: none;
-            }
-            
-            /* 個人明細表格手機優化：隱藏天數、時數 */
-            #personal-content table th:nth-child(2), #personal-content table td:nth-child(2),
-            #personal-content table th:nth-child(3), #personal-content table td:nth-child(3) {
-                display: none;
-            }
+            /* 🚀 【徹底解放】移除了所有「display: none;」隱藏欄位規則！ */
+            /* 現在不論是全體總覽還是個人明細，所有欄位均會百分之百在手機完整看見 */
 
-            /* 手機端圓形縮圖鈕 */
+            /* 手機端精緻小巧圓形縮圖鈕 */
             .doc-thumbnail { 
-                width: 40px; 
-                height: 40px; 
+                width: 35px; 
+                height: 35px; 
                 object-fit: cover;      
                 border-radius: 50%;     
-                border: 2px solid var(--border-color);
-                box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+                border: 1px solid var(--border-color);
+                box-shadow: 0 1px 4px rgba(0,0,0,0.5);
             }
         }
 
@@ -224,20 +222,22 @@
 
         <div id="overview-view" class="view-section active">
             <h3>全體教師研習統計摘要</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>職碼</th>
-                        <th>姓名</th>
-                        <th>114/6/30截止累計</th>
-                        <th>本年度新增次數</th>
-                        <th>最終累計次數</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody id="overview-tbody">
-                    </tbody>
-            </table>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>職碼</th>
+                            <th>姓名</th>
+                            <th>114/6/30截止累計</th>
+                            <th>本年度新增次數</th>
+                            <th>最終累計次數</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="overview-tbody">
+                        </tbody>
+                </table>
+            </div>
         </div>
 
         <div id="personal-view" class="view-section">
@@ -444,19 +444,21 @@
                 <div class="summary-box-card" style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px; text-align: center; border: 1px solid var(--border-color);"><h4>總次數</h4><p style="color: var(--accent-gold);">${totalCount}</p></div>
             </div>
             <div class="history-title">本學年度研習明細</div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>研習日期</th>
-                        <th>研習天數</th>
-                        <th>研習時數</th>
-                        <th>採計次數</th>
-                        <th style="color: var(--danger-red);">研習公文</th>
-                        <th style="color: var(--success-green);">研習結果</th>
-                    </tr>
-                </thead>
-                <tbody>${recordsRows}</tbody>
-            </table>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>研習日期</th>
+                            <th>研習天數</th>
+                            <th>研習時數</th>
+                            <th>採計次數</th>
+                            <th style="color: var(--danger-red);">研習公文</th>
+                            <th style="color: var(--success-green);">研習結果</th>
+                        </tr>
+                    </thead>
+                    <tbody>${recordsRows}</tbody>
+                </table>
+            </div>
         `;
     }
 </script>
