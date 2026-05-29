@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>114學年度數學領域教師研習次數記錄系統 (全欄位完整響應版)</title>
+    <title>114年度-研習次數記錄</title>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
@@ -206,7 +206,6 @@
 <div class="container">
     <header>
         <h1>114學年度--數學領域教師研習次數記錄系統</h1>
-        <p>【雲端自動同步 ｜ 跨平台智慧響應版】</p>
     </header>
 
     <div class="status-zone">
@@ -221,7 +220,7 @@
         </div>
 
         <div id="overview-view" class="view-section active">
-            <h3>全體教師研習統計摘要</h3>
+            <h3>全體研習統計摘要</h3>
             <div class="table-responsive">
                 <table>
                     <thead>
@@ -229,8 +228,8 @@
                             <th>職碼</th>
                             <th>姓名</th>
                             <th>114/6/30<BR>截止累計</th>
-                            <th>今年新增次數</th>
-                            <th>總累計次數</th>
+                            <th>今年<BR>新增次數</th>
+                            <th>累計總數</th>
                             <th>操作</th>
                         </tr>
                     </thead>
@@ -242,7 +241,7 @@
 
         <div id="personal-view" class="view-section">
             <div class="personal-select-wrapper">
-                <label for="teacher-select">請選擇教師：</label>
+                <label for="teacher-select">研習人員：</label>
                 <select id="teacher-select" onchange="renderPersonalDetail(this.value)">
                     </select>
             </div>
@@ -448,12 +447,12 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>研習日期</th>
-                            <th>研習天數</th>
-                            <th>研習時數</th>
-                            <th>採計次數</th>
-                            <th style="color: var(--danger-red);">研習公文</th>
-                            <th style="color: var(--success-green);">研習結果</th>
+                            <th>研習<BR>日期</th>
+                            <th>研習<BR>天數</th>
+                            <th>研習<BR>時數</th>
+                            <th>採計<BR>次數</th>
+                            <th style="color: var(--danger-red);">研習<BR>公文</th>
+                            <th style="color: var(--success-green);">研習<BR>結果</th>
                         </tr>
                     </thead>
                     <tbody>${recordsRows}</tbody>
