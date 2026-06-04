@@ -93,11 +93,19 @@
         .personal-select-wrapper label { font-size: 22px; font-weight: bold; color: var(--text-main); }
         select { width: 100%; padding: 8px 16px; font-size: 22px; font-weight: bold; border-radius: 6px; border: 2px solid var(--accent-blue); outline: none; background: var(--card-bg); color: var(--text-main); cursor: pointer; }
         
-        /* 個人摘要統計卡片 */
+        /* 個人摘要統計卡片 (電腦端預設大字與配色) */
         .summary-box { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 10px; }
         .summary-card { background: rgba(255,255,255,0.02); padding: 6px; border-radius: 6px; text-align: center; border: 1px solid var(--border-color); }
         .summary-card h4 { font-size: 16px; color: var(--text-muted); margin-bottom: 2px; font-weight: bold; }
-        .summary-card p { font-size: 20px; font-weight: bold; color: var(--text-on-primary); }
+        .summary-card p { font-size: 26px; font-weight: bold; color: var(--text-on-primary); }
+        
+        /* 今年新增大數字的預設藍色 */
+        .summary-card .new-count-text { color: var(--accent-blue); }
+
+        /* 第四個格子(總次數)的電腦端獨立預設樣式 */
+        .summary-box-card { background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px; text-align: center; border: 1px solid var(--border-color); }
+        .summary-box-card h4 { font-size: 16px; color: var(--text-muted); margin-bottom: 2px; font-weight: bold; }
+        .summary-box-card p { font-size: 32px; font-weight: bold; color: var(--accent-gold); }
         
         .history-title { margin: 10px 0 6px 0; font-size: 24px; font-weight: bold; color: var(--text-main); border-left: 5px solid var(--accent-blue); padding-left: 10px; line-height: 1.3; }
         .no-data { color: var(--text-muted); text-align: center; padding: 15px; font-size: 22px; }
@@ -172,26 +180,30 @@
             .status-zone p { font-size: 16px; }
             .status-badge { font-size: 14px; }
             select { font-size: 16px; padding: 6px 10px; }
-            /*.summary-card p { font-size: 20px; }*/
             .summary-card h4 { font-size: 18px; }
             .history-title { font-size: 18px; }
             .final-count { font-size: 16px; }
             .btn-view { padding: 4px 6px; font-size: 16px; }
+
             /* ──────────────────────────────────────────────────────── */
-            /* 🎯 【手機專屬】修改（研習人員、去年累計、今年新增）的大字控制 */
+            /* 🎯 【手機專屬】修改（研習人員、去年累計、今年新增）的大字控制  */
             /* ──────────────────────────────────────────────────────── */
             .summary-card p { 
-                font-size: 20px !important;    /* 👈 修改這裡：手機版前三個紅框字體大小 */
-                color: #ffffff !important;     /* 👈 修改這裡：手機版前三個紅框字體顏色 */
+                font-size: 20px !important;    /* 👈 隨時修改這裡：手機版前三個紅框字體大小 */
+                color: #ffffff !important;     /* 👈 隨時修改這裡：手機版前三個紅框字體顏色 */
+            }
+            
+            /* 今年新增數字在手機版的專屬顏色 (若想與其他兩個框框不同顏色，可在這裡單獨指定) */
+            .summary-card .new-count-text {
+                color: #3498db !important;     /* 👈 預設維持原本漂亮的藍色 */
             }
 
-            /* ────────
             /* ──────────────────────────────────────────────────────── */
-            /* 🎯 【手機專屬】修改（總次數）的大數字控制                 */
+            /* 🎯 【手機專屬】修改（總次數）的大數字控制 (已修復註解破裂)    */
             /* ──────────────────────────────────────────────────────── */
             .summary-box-card p {
-                font-size: 22px !important;    /* 👈 修改這裡：手機版第四個紅框(總次數)字體大小 */
-                color: #f39c12 !important;     /* 👈 修改這裡：手機版第四個紅框(總次數)字體顏色 */
+                font-size: 22px !important;    /* 👈 隨時修改這裡：手機版第四個紅框(總次數)字體大小 */
+                color: #f39c12 !important;     /* 👈 隨時修改這裡：手機版第四個紅框(總次數)字體顏色 */
             }
             
             /* 🚀 【徹底解放】移除了所有「display: none;」隱藏欄位規則！ */
@@ -450,12 +462,13 @@
             });
         }
 
+        /* 🎯 關鍵優化：移除了原本總次數 <p> 標籤上的 style 行內屬性，交由 CSS 權重完美控制 */
         contentDiv.innerHTML = `
             <div class="summary-box">
                 <div class="summary-card"><h4>研習人員</h4><p>${teacher.name}</p></div>
                 <div class="summary-card"><h4>去年累計</h4><p>${teacher.prevCount}次</p></div>
-                <div class="summary-card"><h4>今年新增</h4><p style="color: var(--accent-blue);">+${newCount}次</p></div>
-                <div class="summary-box-card" style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px; text-align: center; border: 1px solid var(--border-color);"><h4>總次數</h4><p style="color: var(--accent-gold);">${totalCount}</p></div>
+                <div class="summary-card"><h4>今年新增</h4><p class="new-count-text">+${newCount}次</p></div>
+                <div class="summary-box-card"><h4>總次數</h4><p>${totalCount}</p></div>
             </div>
             <div class="history-title">今年研習明細</div>
             <div class="table-responsive">
