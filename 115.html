@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>114年度-研習次數記錄</title>
+    <title>115學年度</title>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
@@ -22,11 +22,15 @@
             --success-green: #2ecc71;   
             --danger-red: #e74c3c;      
             
+            /* === 優雅淡紫色系 === */
+            --accent-purple: #9b59b6;   
+            --accent-purple-hover: rgba(155, 89, 182, 0.2);
+            
             --border-color: #383838;    
             --overlay-bg: rgba(0, 0, 0, 0.95); 
         }
 
-        /* 基礎全域大字體設定 (電腦端維持 22px 舒適大字) */
+        /* 基礎全域大字體設定 */
         * { 
             box-sizing: border-box; 
             margin: 0; 
@@ -40,19 +44,17 @@
         
         /* 標題區 */
         header { text-align: center; margin-bottom: 10px; background: var(--header-bg); padding: 10px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid var(--border-color); }
-        header h1 { color: var(--text-on-primary); font-size: 28px; margin-bottom: 2px; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-        header p { font-size: 18px; color: var(--text-muted); }
+        header h1 { color: var(--text-on-primary); font-size: 28px; font-weight: bold; }
         
-        /* 雲端連線狀態提示區 */
+        /* 雲端連線狀態 */
         .status-zone {
-            background: rgba(52, 152, 219, 0.08); 
-            border: 2px dashed rgba(52, 152, 219, 0.4);
+            background: rgba(52, 152, 219, 0.05); 
+            border: 1px dashed rgba(52, 152, 219, 0.3);
             padding: 8px;
             text-align: center;
             border-radius: 8px;
             margin-bottom: 10px;
         }
-        .status-zone p { color: var(--accent-blue); font-weight: bold; font-size: 22px; margin-bottom: 3px; }
         .status-badge { display: inline-block; padding: 3px 12px; background: #444; color: var(--text-main); border-radius: 20px; font-size: 18px; font-weight: bold; }
         .status-badge.loaded { background: var(--success-green); color: white; }
         .status-badge.error { background: var(--danger-red); color: white; }
@@ -61,171 +63,117 @@
         .main-content { display: none; margin-top: 5px; }
         .nav-tabs { display: flex; gap: 10px; margin-bottom: 10px; }
         
-        /* 頁籤按鈕 */
-        .tab-btn { flex: 1; text-align: center; padding: 10px 15px; background: #333; border: none; border-radius: 6px; cursor: pointer; font-size: 22px; font-weight: bold; color: var(--text-main); transition: all 0.2s; }
+        /* 主功能頁籤 */
+        .tab-btn { flex: 1; text-align: center; padding: 10px 15px; background: #333; border: none; border-radius: 6px; cursor: pointer; font-size: 22px; font-weight: bold; color: var(--text-main); }
         .tab-btn.active { background: var(--accent-blue); color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
 
-        /* 內容卡片區 */
+        /* 個人紀錄下拉選單 */
+        .personal-select-wrapper { margin-bottom: 12px; display: flex; flex-direction: column; gap: 6px; }
+        .personal-select-wrapper label { font-size: 22px; font-weight: bold; color: var(--text-main); }
+        select { width: 100%; padding: 8px 16px; font-size: 22px; font-weight: bold; border-radius: 6px; border: 2px solid var(--accent-blue); outline: none; background: var(--card-bg); color: var(--text-main); cursor: pointer; }
+
+        /* 子功能頁籤按鈕群組 */
+        .sub-tabs-container { display: flex; gap: 12px; margin-bottom: 15px; }
+        .sub-tab-btn { padding: 8px 20px; background: #2b2b2b; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; font-size: 20px; font-weight: bold; color: var(--text-muted); transition: all 0.25s dashed; display: flex; align-items: center; gap: 6px; }
+        
+        /* 📘 研習紀錄按鈕樣式 */
+        .sub-tab-btn.theme-seminar { border-color: rgba(52, 152, 219, 0.4); }
+        .sub-tab-btn.theme-seminar:hover { background: rgba(52, 152, 219, 0.15); color: #fff; }
+        .sub-tab-btn.active.theme-seminar { background: var(--accent-blue); color: white; border-color: var(--accent-blue); box-shadow: 0 2px 8px rgba(52, 152, 219, 0.4); }
+        
+        /* 📝 段考命題按鈕樣式：淡紫色 */
+        .sub-tab-btn.theme-exam { border-color: rgba(155, 89, 182, 0.4); color: #d2b4de; }
+        .sub-tab-btn.theme-exam:hover { background: var(--accent-purple-hover); color: #fff; }
+        .sub-tab-btn.active.theme-exam { background: var(--accent-purple); color: white; border-color: var(--accent-purple); box-shadow: 0 2px 8px rgba(155, 89, 182, 0.5); }
+
+        /* 命題輪值專用：階段切換鈕樣式 */
+        .phase-tabs-container { display: flex; gap: 8px; margin: 12px 0; background: rgba(255,255,255,0.03); padding: 6px; border-radius: 8px; border: 1px solid var(--border-color); }
+        .phase-tab-btn { flex: 1; padding: 8px 10px; background: transparent; border: none; border-radius: 6px; color: var(--text-muted); font-size: 20px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; text-align: center; }
+        .phase-tab-btn:hover { background: rgba(155, 89, 182, 0.1); color: #fff; }
+        .phase-tab-btn.active { background: var(--accent-purple); color: #fff; box-shadow: 0 2px 6px rgba(155, 89, 182, 0.4); }
+
+        /* 檢視區塊卡片 */
         .view-section { background: var(--card-bg); padding: 12px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid var(--border-color); display: none; }
         .view-section.active { display: block; }
         .view-section h3 { font-size: 24px; color: var(--text-main); margin-bottom: 8px; border-bottom: 2px solid var(--border-color); padding-bottom: 4px; font-weight: bold; }
 
-        /* ✨ 表格寬度防爆滾動包覆層 ✨ */
-        .table-responsive {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch; /* 讓手機端滑動更順暢 */
-            margin-top: 2px;
-        }
-
-        /* 表格排版 */
-        table { width: 100%; border-collapse: collapse; text-align: center; }
-        th, td { padding: 8px 6px; border-bottom: 1px solid var(--border-color); font-size: 22px; text-align: center; vertical-align: middle; color: var(--text-main); white-space: nowrap; /* 防止標題或內容亂折行 */}
-        th { background-color: var(--table-header-bg); color: var(--text-main); font-weight: bold; font-size: 22px; } 
-        tr:hover { background-color: rgba(255, 255, 255, 0.02); } 
-        td strong { font-size: 22px; color: var(--text-on-primary); }
-        
-        /* 黃色最終累計次數 */
-        .final-count { color: var(--accent-gold); font-weight: bold; font-size: 25px; } 
-
-        /* 個人紀錄下拉選單 */
-        .personal-select-wrapper { margin-bottom: 10px; display: flex; flex-direction: column; gap: 6px; }
-        .personal-select-wrapper label { font-size: 22px; font-weight: bold; color: var(--text-main); }
-        select { width: 100%; padding: 8px 16px; font-size: 22px; font-weight: bold; border-radius: 6px; border: 2px solid var(--accent-blue); outline: none; background: var(--card-bg); color: var(--text-main); cursor: pointer; }
-        
-        /* 個人摘要統計卡片 (電腦端預設大字與配色) */
-        .summary-box { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 10px; }
-        .summary-card { background: rgba(255,255,255,0.02); padding: 6px; border-radius: 6px; text-align: center; border: 1px solid var(--border-color); }
+        /* 個人摘要統計大字卡 */
+        .summary-box { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 15px; }
+        .summary-card { background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px; text-align: center; border: 1px solid var(--border-color); }
         .summary-card h4 { font-size: 16px; color: var(--text-muted); margin-bottom: 2px; font-weight: bold; }
-        .summary-card p { font-size: 26px; font-weight: bold; color: var(--text-on-primary); }
+        .summary-card p { font-size: 20px; font-weight: bold; color: var(--text-on-primary); }
+        .summary-card .blue-highlight { color: var(--accent-blue); }
+        .summary-card .purple-highlight { color: #c39bd3; font-size: 30px; } 
         
-        /* 今年新增大數字的預設藍色 */
-        .summary-card .new-count-text { color: var(--accent-blue); }
-
-        /* 第四個格子(總次數)的電腦端獨立預設樣式 */
         .summary-box-card { background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px; text-align: center; border: 1px solid var(--border-color); }
         .summary-box-card h4 { font-size: 16px; color: var(--text-muted); margin-bottom: 2px; font-weight: bold; }
-        .summary-box-card p { font-size: 32px; font-weight: bold; color: var(--accent-gold); }
+        .summary-box-card p { font-size: 22px; font-weight: bold; color: var(--accent-gold); }
         
-        .history-title { margin: 10px 0 6px 0; font-size: 24px; font-weight: bold; color: var(--text-main); border-left: 5px solid var(--accent-blue); padding-left: 10px; line-height: 1.3; }
-        .no-data { color: var(--text-muted); text-align: center; padding: 15px; font-size: 22px; }
+        /* 側邊裝飾條標題 */
+        .history-title { margin: 18px 0 8px 0; font-size: 24px; font-weight: bold; color: var(--text-on-primary); border-left: 5px solid var(--accent-blue); padding-left: 10px; line-height: 1.3; }
         
-        /* 檢視按鈕 */
-        .btn-view { padding: 5px 14px; background-color: var(--accent-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.3); display: inline-block; }
+        /* 表格響應式包覆層 */
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 20px; border-radius: 6px; border: 1px solid var(--border-color); }
 
-        /* === 電腦端預設縮圖樣式 === */
-        .doc-thumbnail {
-            display: inline-block;
+        /* 輪值表專用表格樣式 */
+        .rotation-table { width: 100%; border-collapse: collapse; text-align: center; background: rgba(255,255,255,0.01); }
+        .rotation-table th, .rotation-table td { padding: 12px 10px; border: 1px solid var(--border-color); font-size: 22px; text-align: center; vertical-align: middle; white-space: nowrap; }
+        .rotation-table th { background-color: var(--table-header-bg); color: var(--text-main); font-weight: bold; }
+        .rotation-table td { color: var(--text-main); height: 55px; }
+        
+        /* 當前選擇教師且是115年出題時的高亮樣式（優雅淡紫） */
+        .highlight-current-teacher { background-color: rgba(155, 89, 182, 0.4) !important; color: #ffffff !important; font-weight: bold; border: 2px solid var(--accent-purple) !important; }
+        /* 一般被選中教師在其他年份的高亮 */
+        .highlight-other-year { background-color: rgba(255, 255, 255, 0.12); color: var(--accent-gold); font-weight: bold; }
+        /* 115本學年度欄位醒目外框 */
+        .col-115 { border-left: 2px solid var(--accent-blue) !important; border-right: 2px solid var(--accent-blue) !important; }
+        .th-115 { background-color: #2c3e50 !important; color: #5dade2 !important; border-left: 2px solid var(--accent-blue) !important; border-right: 2px solid var(--accent-blue) !important; }
+
+        .btn-view { padding: 5px 14px; background-color: var(--accent-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 20px; }
+        
+        /* ✨ 修正：縮圖改為精緻的小圓形 */
+        .doc-thumbnail { 
+            display: inline-block; 
             height: 45px; 
-            width: auto;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            border: 1px solid var(--border-color);
-            vertical-align: middle;
+            width: 45px;             /* 固定寬度，使其成正方形 */
+            border-radius: 50%;      /* 完美的正圓形 */
+            object-fit: cover;       /* 照片自動填滿切圓不變形 */
+            cursor: pointer; 
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s; 
+            border: 2px solid var(--border-color); 
+            vertical-align: middle; 
         }
-        .doc-thumbnail:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 8px rgba(52, 152, 219, 0.6); 
+        /* ✨ 修正：滑鼠懸停時微幅放大與發光反饋 */
+        .doc-thumbnail:hover { 
+            transform: scale(1.15); 
             border-color: var(--accent-blue);
+            box-shadow: 0 0 8px rgba(52, 152, 219, 0.6);
         }
         
-        /* 全螢幕燈箱 */
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--overlay-bg);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-        }
-        .overlay.active { display: flex; opacity: 1; }
-        .full-doc-image {
-            max-width: 95%;
-            max-height: 85%;
-            border-radius: 6px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.8); 
-            border: 2px solid #fff; 
-            object-fit: contain;
-        }
-        .overlay-close-btn {
-            position: absolute;
-            top: 20px;
-            right: 25px;
-            color: #fff;
-            font-size: 45px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--overlay-bg); z-index: 9999; justify-content: center; align-items: center; }
+        .overlay.active { display: flex; }
+        .full-doc-image { max-width: 95%; max-height: 85%; border-radius: 6px; border: 2px solid #fff; object-fit: contain; }
+        .overlay-close-btn { position: absolute; top: 20px; right: 25px; color: #fff; font-size: 45px; font-weight: bold; cursor: pointer; }
 
-        /* =================================================== */
-        /* ✨ 手機與平板專屬 RWD (解鎖全欄位呈現 + 16px 精細字體) ✨ */
-        /* =================================================== */
         @media (max-width: 768px) {
             body { padding: 6px; }
-            header { padding: 10px 8px; margin-bottom: 8px; }
-            header h1 { font-size: 20px; }
-            header p { font-size: 14px; }
-            
-            /* 🎯 關鍵修改：將手機版全局與表格字體調整為 16px 緊湊比例 */
             * { font-size: 16px; }
-            th, td { font-size: 16px; padding: 6px 3px; }
-            td strong { font-size: 16px; }
-            .tab-btn { font-size: 22px; padding: 8px 6px; }
-            .view-section h3 { font-size: 18px; }
-            .status-zone p { font-size: 16px; }
-            .status-badge { font-size: 14px; }
+            .rotation-table th, .rotation-table td { font-size: 16px; padding: 8px 4px; height: 45px; }
+            .tab-btn { font-size: 20px; padding: 8px 6px; }
+            .sub-tab-btn { font-size: 16px; padding: 6px 12px; }
+            .phase-tab-btn { font-size: 15px; padding: 6px 4px; }
             select { font-size: 16px; padding: 6px 10px; }
-            .summary-card h4 { font-size: 18px; }
+            .summary-card p { font-size: 20px !important; }
+            .summary-box-card p { font-size: 22px !important; }
             .history-title { font-size: 18px; }
-            .final-count { font-size: 16px; }
-            .btn-view { padding: 4px 6px; font-size: 16px; }
-
-            /* ──────────────────────────────────────────────────────── */
-            /* 🎯 【手機專屬】修改（研習人員、去年累計、今年新增）的大字控制  */
-            /* ──────────────────────────────────────────────────────── */
-            .summary-card p { 
-                font-size: 20px !important;    /* 👈 隨時修改這裡：手機版前三個紅框字體大小 */
-                color: #ffffff !important;     /* 👈 隨時修改這裡：手機版前三個紅框字體顏色 */
-            }
-            
-            /* 今年新增數字在手機版的專屬顏色 (若想與其他兩個框框不同顏色，可在這裡單獨指定) */
-            .summary-card .new-count-text {
-                color: #3498db !important;     /* 👈 預設維持原本漂亮的藍色 */
-            }
-
-            /* ──────────────────────────────────────────────────────── */
-            /* 🎯 【手機專屬】修改（總次數）的大數字控制 (已修復註解破裂)    */
-            /* ──────────────────────────────────────────────────────── */
-            .summary-box-card p {
-                font-size: 22px !important;    /* 👈 隨時修改這裡：手機版第四個紅框(總次數)字體大小 */
-                color: #f39c12 !important;     /* 👈 隨時修改這裡：手機版第四個紅框(總次數)字體顏色 */
-            }
-            
-            /* 🚀 【徹底解放】移除了所有「display: none;」隱藏欄位規則！ */
-            /* 現在不論是全體總覽還是個人明細，所有欄位均會百分之百在手機完整看見 */
-
-            /* 手機端精緻小巧圓形縮圖鈕 */
-            .doc-thumbnail { 
-                width: 35px; 
-                height: 35px; 
-                object-fit: cover;      
-                border-radius: 50%;     
-                border: 1px solid var(--border-color);
-                box-shadow: 0 1px 4px rgba(0,0,0,0.5);
-            }
+            /* 手機版微調圓圈大小，避免佔空間 */
+            .doc-thumbnail { height: 38px; width: 38px; }
         }
 
-        /* 電腦端展開優化 */
         @media (min-width: 769px) {
-            .personal-select-wrapper { flex-direction: row; }
+            .personal-select-wrapper { flex-direction: row; align-items: center; }
+            .personal-select-wrapper label { white-space: nowrap; }
             .summary-box { grid-template-columns: repeat(4, 1fr); }
-            header h1 { font-size: 32px; }
-            th, td { font-size: 22px; padding: 10px 12px; }
         }
     </style>
 </head>
@@ -233,11 +181,11 @@
 
 <div class="container">
     <header>
-        <h1>115年度--研習次數記錄</h1>
+        <h1>115學年度</h1>
     </header>
 
     <div class="status-zone">
-        <span id="file-status" class="status-badge loading">正在連線至資料庫...</span>
+        <span id="file-status" class="status-badge">正在同步雲端資料庫...</span>
     </div>
 
     <div class="main-content" id="main-content">
@@ -247,33 +195,34 @@
         </div>
 
         <div id="overview-view" class="view-section active">
-            <h3>全體統計摘要</h3>
+            <h3>全體人員摘要</h3>
             <div class="table-responsive">
-                <table>
+                <table class="rotation-table">
                     <thead>
                         <tr>
-                            <th>序<BR>號</th>
-                            <th>姓<BR>名</th>
-                            <th>114/6/30<BR>截止累計</th>
-                            <th>今年<BR>新增次數</th>
-                            <th>累計<BR>總數</th>
-                            <th>操<BR>作</th>
+                            <th>序號</th>
+                            <th>姓名</th>
+                            <th>研習總次數</th>
+                            <th>操作</th>
                         </tr>
                     </thead>
-                    <tbody id="overview-tbody">
-                        </tbody>
+                    <tbody id="overview-tbody"></tbody>
                 </table>
             </div>
         </div>
 
         <div id="personal-view" class="view-section">
             <div class="personal-select-wrapper">
-                <label for="teacher-select">研習人員：</label>
-                <select id="teacher-select" onchange="renderPersonalDetail(this.value)">
-                    </select>
+                <label for="teacher-select">請選擇人員：</label>
+                <select id="teacher-select" onchange="changedTeacher(this.value)"></select>
             </div>
-            <div id="personal-content">
-                </div>
+            
+            <div class="sub-tabs-container">
+                <button id="sub-tab-seminar" class="sub-tab-btn active theme-seminar" onclick="switchSubTab('seminar')">📘 研習紀錄</button>
+                <button id="sub-tab-exam" class="sub-tab-btn theme-exam" onclick="switchSubTab('exam')">📝 命題次數(4)</button>
+            </div>
+
+            <div id="dynamic-personal-zone"></div>
         </div>
     </div>
 </div>
@@ -284,28 +233,46 @@
 </div>
 
 <script>
-    let seminarData = [];
+    let systemData = []; 
+    let currentSubTab = 'seminar'; 
+    let currentExamPhase = 1; // 追蹤當前看的是哪一個五年階段：1=111-115, 2=116-120, 3=121-125
     const excelFileName = '114_teacher_record.xlsx';
 
-    window.addEventListener('DOMContentLoaded', (event) => {
+    // 🎯 正確的 2人輪值律：5年一循環，出題4次的輪值順序：盧◯-->李◯-->藺◯-->曹◯-->張◯
+    const yearPairs = {
+        0: ["盧◯", "李◯"], 
+        1: ["藺◯", "曹◯"], 
+        2: ["張◯", "盧◯"], 
+        3: ["李◯", "藺◯"], 
+        4: ["曹◯", "張◯"]  
+    };
+    
+    function getExamTeachersByYear(year) {
+        const cycleIndex = (year - 111) % 5;
+        return yearPairs[cycleIndex] || [];
+    }
+
+    let globalExamSchedule = {};
+    for (let y = 111; y <= 125; y++) {
+        globalExamSchedule[y] = getExamTeachersByYear(y);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
         fetch(excelFileName)
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('找不到雲端資料庫檔案，請確認檔案是否存在。');
-                }
+                if (!response.ok) throw new Error('找不到 Excel 檔案。');
                 return response.arrayBuffer();
             })
             .then(buffer => {
                 const data = new Uint8Array(buffer);
                 const workbook = XLSX.read(data, { type: 'array' });
                 
-                const sheetRecords = XLSX.utils.sheet_to_json(workbook.Sheets["研習紀錄"] || workbook.Sheets[workbook.SheetNames[0]]);
-                const sheetTeachers = XLSX.utils.sheet_to_json(workbook.Sheets["教師名稱"] || workbook.Sheets[workbook.SheetNames[1]]);
+                const sheetTeachers = XLSX.utils.sheet_to_json(workbook.Sheets["教師名稱"] || workbook.Sheets[0]);
+                const sheetRecords = XLSX.utils.sheet_to_json(workbook.Sheets["研習紀錄"] || []);
                 
-                mergeSheetsToSystemData(sheetTeachers, sheetRecords);
+                mergeDatabase(sheetTeachers, sheetRecords);
 
-                // 成功同步後
-                document.getElementById('file-status').textContent = `成功讀取資料...`;
+                document.getElementById('file-status').textContent = `成功同步雲端資料...`;
                 document.getElementById('file-status').className = "status-badge loaded";
                 document.getElementById('main-content').style.display = "block";
 
@@ -313,17 +280,17 @@
             })
             .catch(error => {
                 console.error(error);
-                document.getElementById('file-status').textContent = `連線失敗：${error.message}`;
+                document.getElementById('file-status').textContent = `連線失敗`;
                 document.getElementById('file-status').className = "status-badge error";
             });
     });
 
-    function mergeSheetsToSystemData(teachers, records) {
-        seminarData = teachers.map(t => {
+    function mergeDatabase(teachers, records) {
+        systemData = teachers.map(t => {
             const id = String(t["職碼"] || "").trim();
             const name = String(t["姓名"] || "").trim();
-            const prevCount = parseInt(t["歷史截止累計"]) || 0;
-
+            
+            const seminarPrev = parseInt(t["歷史截止累計"]) || 0;
             const matchedRecords = records.filter(r => String(r["姓名"] || "").trim() === name).map(r => ({
                 date: String(r["研習日期"] || "").trim(),
                 item: String(r["研習天數"] || r["研習天數項目"] || "").trim(),
@@ -333,40 +300,34 @@
                 resultDoc: String(r["研習結果"] || "").trim() 
             })).filter(r => r.date !== "");
 
-            return { id, name, prevCount, records: matchedRecords };
+            let examNew = 0;      
+            let examHistory = 0;  
+            
+            for(let y=111; y<=125; y++) {
+                const isAssigned = globalExamSchedule[y].some(tName => name.includes(tName.replace("◯","")) || tName.includes(name.replace("◯","")));
+                if(isAssigned) {
+                    if(y === 115) {
+                        examNew = 4;
+                    } else {
+                        examHistory += 4;
+                    }
+                }
+            }
+
+            return { id, name, seminarPrev, records: matchedRecords, examNew, examHistory };
         }).filter(t => t.id !== "");
-    }
-
-    function openDoc(folder, imgFileName) {
-        if (!imgFileName) return;
-        const overlay = document.getElementById('doc-overlay');
-        const fullImage = document.getElementById('full-doc-image');
-        fullImage.src = folder + '/' + imgFileName;
-        overlay.classList.add('active');
-    }
-
-    function closeDoc() {
-        const overlay = document.getElementById('doc-overlay');
-        overlay.classList.remove('active');
-        setTimeout(() => {
-            document.getElementById('full-doc-image').src = '';
-        }, 200);
     }
 
     function refreshUI() {
         renderOverviewTable();
         populateTeacherSelect();
-        
         const select = document.getElementById('teacher-select');
-        if (select.options.length > 0) {
-            renderPersonalDetail(select.value);
-        }
+        if (select.options.length > 0) renderPersonalZone(select.value);
     }
 
     function switchView(viewType) {
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
-
         if(viewType === 'overview') {
             document.querySelectorAll('.tab-btn')[0].classList.add('active');
             document.getElementById('overview-view').classList.add('active');
@@ -376,119 +337,192 @@
         }
     }
 
-    function calculateNewCount(records) {
-        return records.reduce((sum, record) => sum + record.count, 0);
+    function switchSubTab(type) {
+        currentSubTab = type;
+        document.querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active'));
+        if(type === 'seminar') {
+            document.getElementById('sub-tab-seminar').classList.add('active');
+        } else {
+            document.getElementById('sub-tab-exam').classList.add('active');
+        }
+        renderPersonalZone(document.getElementById('teacher-select').value);
+    }
+
+    function switchPhase(phaseNum) {
+        currentExamPhase = phaseNum;
+        renderPersonalZone(document.getElementById('teacher-select').value);
+    }
+
+    function populateTeacherSelect() {
+        const select = document.getElementById('teacher-select');
+        select.innerHTML = '';
+        systemData.forEach(t => {
+            const opt = document.createElement('option');
+            opt.value = t.id;
+            opt.textContent = `職碼 ${t.id} - ${t.name}`;
+            select.appendChild(opt);
+        });
+    }
+
+    function changedTeacher(id) {
+        renderPersonalZone(id);
+    }
+
+    function viewTeacherDetail(id) {
+        document.getElementById('teacher-select').value = id;
+        renderPersonalZone(id);
+        switchView('personal');
     }
 
     function renderOverviewTable() {
         const tbody = document.getElementById('overview-tbody');
         tbody.innerHTML = '';
-
-        seminarData.forEach(teacher => {
-            const newCount = calculateNewCount(teacher.records);
-            const totalCount = teacher.prevCount + newCount;
-
+        systemData.forEach(t => {
+            const semNew = t.records.reduce((sum, r) => sum + r.count, 0);
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td><strong>${teacher.id}</strong></td>
-                <td><strong>${teacher.name}</strong></td>
-                <td>${teacher.prevCount}</td>
-                <td>+${newCount} </td>
-                <td><span class="final-count">${totalCount} </span></td>
-                <td>
-                    <button class="btn-view" onclick="viewTeacherDetail('${teacher.id}')">檢視</button>
-                </td>
+                <td><strong>${t.id}</strong></td>
+                <td><strong>${t.name}</strong></td>
+                <td><span class="final-count">${t.seminarPrev + semNew} 次</span></td>
+                <td><button class="btn-view" onclick="viewTeacherDetail('${t.id}')">檢視</button></td>
             `;
             tbody.appendChild(tr);
         });
     }
 
-    function populateTeacherSelect() {
-        const select = document.getElementById('teacher-select');
-        const currentSelectedValue = select.value;
-        select.innerHTML = '';
-        
-        seminarData.forEach(teacher => {
-            const option = document.createElement('option');
-            option.value = teacher.id;
-            option.textContent = `職碼 ${teacher.id} - ${teacher.name}`;
-            select.appendChild(option);
-        });
-
-        if (seminarData.some(t => t.id === currentSelectedValue)) {
-            select.value = currentSelectedValue;
+    function generate5YearTableHtml(startYear, endYear, currentTeacherName) {
+        let thHtml = '<tr>';
+        for (let y = startYear; y <= endYear; y++) {
+            const class115 = (y === 115) ? 'class="th-115"' : '';
+            thHtml += `<th ${class115}>${y} 年</th>`;
         }
-    }
+        thHtml += '</tr>';
 
-    function viewTeacherDetail(teacherId) {
-        document.getElementById('teacher-select').value = teacherId;
-        renderPersonalDetail(teacherId);
-        switchView('personal');
-    }
-
-    function renderPersonalDetail(teacherId) {
-        const teacher = seminarData.find(t => t.id === teacherId);
-        const contentDiv = document.getElementById('personal-content');
-        if (!teacher) { contentDiv.innerHTML = ''; return; }
-
-        const newCount = calculateNewCount(teacher.records);
-        const totalCount = teacher.prevCount + newCount;
-
-        let recordsRows = '';
-        if(teacher.records.length === 0) {
-            recordsRows = `<tr><td colspan="6" class="no-data">目前無研習明細紀錄</td></tr>`;
-        } else {
-            teacher.records.forEach(r => {
-                let docContent = '---';
-                if (r.document) {
-                    docContent = `<img src="docs/${r.document}" alt="公文預覽" class="doc-thumbnail" onclick="openDoc('docs', '${r.document}')">`;
+        let rowsHtml = '';
+        for (let rowIdx = 0; rowIdx < 2; rowIdx++) {
+            rowsHtml += '<tr>';
+            for (let y = startYear; y <= endYear; y++) {
+                const teachers = globalExamSchedule[y];
+                const teacherName = teachers[rowIdx] || "";
+                
+                const isCurrent = currentTeacherName.includes(teacherName.replace("◯","")) || teacherName.includes(currentTeacherName.replace("◯",""));
+                
+                let cellClass = '';
+                if (isCurrent && teacherName !== "") {
+                    cellClass = (y === 115) ? 'class="highlight-current-teacher col-115"' : 'class="highlight-other-year"';
+                } else if (y === 115) {
+                    cellClass = 'class="col-115"';
                 }
 
-                let resultDocContent = '---';
-                if (r.resultDoc) {
-                    resultDocContent = `<img src="docs_result/${r.resultDoc}" alt="驗證照片" class="doc-thumbnail" onclick="openDoc('docs_result', '${r.resultDoc}')">`;
-                }
-
-                recordsRows += `
-                    <tr>
-                        <td><strong>${r.date}</strong></td>
-                        <td>${r.item}</td>
-                        <td>${r.hours}</td>
-                        <td><strong>+${r.count} </strong></td>
-                        <td>${docContent}</td>
-                        <td>${resultDocContent}</td>
-                    </tr>
-                `;
-            });
+                rowsHtml += `<td ${cellClass}>${teacherName}</td>`;
+            }
+            rowsHtml += '</tr>';
         }
 
-        /* 🎯 關鍵優化：移除了原本總次數 <p> 標籤上的 style 行內屬性，交由 CSS 權重完美控制 */
-        contentDiv.innerHTML = `
-            <div class="summary-box">
-                <div class="summary-card"><h4>研習人員</h4><p>${teacher.name}</p></div>
-                <div class="summary-card"><h4>去年累計</h4><p>${teacher.prevCount}次</p></div>
-                <div class="summary-card"><h4>今年新增</h4><p class="new-count-text">+${newCount}次</p></div>
-                <div class="summary-box-card"><h4>總次數</h4><p>${totalCount}</p></div>
-            </div>
-            <div class="history-title">今年研習明細</div>
+        return `
             <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>研習<BR>日期</th>
-                            <th>研習<BR>天數</th>
-                            <th>研習<BR>時數</th>
-                            <th>採計<BR>次數</th>
-                            <th style="color: var(--danger-red);">研習<BR>公文</th>
-                            <th style="color: var(--success-green);">研習<BR>結果</th>
-                        </tr>
-                    </thead>
-                    <tbody>${recordsRows}</tbody>
+                <table class="rotation-table">
+                    <thead>${thHtml}</thead>
+                    <tbody>${rowsHtml}</tbody>
                 </table>
             </div>
         `;
     }
-</script>
 
+    function renderPersonalZone(id) {
+        const t = systemData.find(teacher => teacher.id === id);
+        const targetDiv = document.getElementById('dynamic-personal-zone');
+        if (!t) { targetDiv.innerHTML = ''; return; }
+
+        if (currentSubTab === 'seminar') {
+            const newCount = t.records.reduce((sum, r) => sum + r.count, 0);
+            const totalCount = t.seminarPrev + newCount;
+
+            let rows = '';
+            if (t.records.length === 0) {
+                rows = `<tr><td colspan="6" class="no-data">目前無研習明細紀錄</td></tr>`;
+            } else {
+                t.records.forEach(r => {
+                    const docImg = r.document ? `<img src="docs/${r.document}" class="doc-thumbnail" onclick="openDoc('docs', '${r.document}')">` : '---';
+                    const resImg = r.resultDoc ? `<img src="docs_result/${r.resultDoc}" class="doc-thumbnail" onclick="openDoc('docs_result', '${r.resultDoc}')">` : '---';
+                    rows += `
+                        <tr>
+                            <td><strong>${r.date}</strong></td>
+                            <td>${r.item}</td>
+                            <td>${r.hours}</td>
+                            <td><strong>+${r.count} 次</strong></td>
+                            <td>${docImg}</td>
+                            <td>${resImg}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            targetDiv.innerHTML = `
+                <div class="summary-box">
+                    <div class="summary-card"><h4>研習人員</h4><p>${t.name}</p></div>
+                    <div class="summary-card"><h4>去年累計</h4><p>${t.seminarPrev}次</p></div>
+                    <div class="summary-card"><h4>今年新增</h4><p class="blue-highlight">+${newCount}次</p></div>
+                    <div class="summary-box-card"><h4>總次數</h4><p>${totalCount}</p></div>
+                </div>
+                <div class="history-title">今年研習明細</div>
+                <div class="table-responsive">
+                    <table class="rotation-table">
+                        <thead>
+                            <tr>
+                                <th>研習<BR>日期</th>
+                                <th>研習<BR>天數</th>
+                                <th>研習<BR>時數</th>
+                                <th>採計<BR>次數</th>
+                                <th style="color: var(--danger-red);">研習<BR>公文</th>
+                                <th style="color: var(--success-green);">研習<BR>結果</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>
+            `;
+        } else {
+            // 📝 段考命題模式
+            const activeP1 = currentExamPhase === 1 ? 'active' : '';
+            const activeP2 = currentExamPhase === 2 ? 'active' : '';
+            const activeP3 = currentExamPhase === 3 ? 'active' : '';
+
+            let targetTableHtml = '';
+            let titleText = '';
+
+            if (currentExamPhase === 1) {
+                titleText = "111～115年_命題4次";
+                targetTableHtml = generate5YearTableHtml(111, 115, t.name);
+            } else if (currentExamPhase === 2) {
+                titleText = "116～120年_命題4次";
+                targetTableHtml = generate5YearTableHtml(116, 120, t.name);
+            } else {
+                titleText = "121～125年_命題4次";
+                targetTableHtml = generate5YearTableHtml(121, 125, t.name);
+            }
+
+            targetDiv.innerHTML = `
+                <div class="phase-tabs-container">
+                    <button class="phase-tab-btn ${activeP1}" onclick="switchPhase(1)">111 ~ 115年</button>
+                    <button class="phase-tab-btn ${activeP2}" onclick="switchPhase(2)">116 ~ 120年</button>
+                    <button class="phase-tab-btn ${activeP3}" onclick="switchPhase(3)">121 ~ 125年</button>
+                </div>
+
+                <div class="history-title" style="border-left-color: var(--accent-purple); margin-top: 10px;">${titleText}</div>
+                ${targetTableHtml}
+            `;
+        }
+    }
+
+    function openDoc(folder, file) {
+        document.getElementById('full-doc-image').src = `${folder}/${file}`;
+        document.getElementById('doc-overlay').classList.add('active');
+    }
+
+    function closeDoc() {
+        document.getElementById('doc-overlay').classList.remove('active');
+    }
+</script>
 </body>
 </html>
