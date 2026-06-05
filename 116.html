@@ -131,13 +131,13 @@
 
         .btn-view { padding: 5px 14px; background-color: var(--accent-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 20px; }
         
-        /* === 🎯 此處已修正為正圓形圖示樣式 === */
+        /* === 🎯 列表小圓形圖示（Icon）設定 === */
         .doc-thumbnail { 
             display: inline-block; 
             height: 45px; 
-            width: 45px;           /* 確保寬度與高度等長 */
-            border-radius: 50%;    /* 關鍵設定：裁切為完美正圓形 */
-            object-fit: cover;     /* 避免圖片轉為正方形時被壓縮拉伸 */
+            width: 45px;           /* 固定寬度，與高度一致 */
+            border-radius: 50%;    /* 裁剪為正圓形 */
+            object-fit: cover;     /* 關鍵：縮圖置中填滿，不壓縮變形 */
             cursor: pointer; 
             transition: transform 0.2s; 
             border: 1px solid var(--border-color); 
@@ -145,9 +145,18 @@
         }
         .doc-thumbnail:hover { transform: scale(1.1); }
         
+        /* === 🎯 點擊放大後的滿版圖片遮罩層設定 === */
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--overlay-bg); z-index: 9999; justify-content: center; align-items: center; }
         .overlay.active { display: flex; }
-        .full-doc-image { max-width: 95%; max-height: 85%; border-radius: 6px; border: 2px solid #fff; object-fit: contain; }
+        
+        /* 放大圖：維持原圖形狀，不套用圓形裁切 */
+        .full-doc-image { 
+            max-width: 95%; 
+            max-height: 85%; 
+            border-radius: 6px;    /* 微圓角（非圓形），保持原圖長寬 */
+            border: 2px solid #fff; 
+            object-fit: contain;   /* 完整呈現全圖比例，不留白不裁切 */
+        }
         .overlay-close-btn { position: absolute; top: 20px; right: 25px; color: #fff; font-size: 45px; font-weight: bold; cursor: pointer; }
 
         @media (max-width: 768px) {
@@ -228,10 +237,9 @@
 <script>
     let systemData = []; 
     let currentSubTab = 'seminar'; 
-    let currentExamPhase = 1; // 追蹤當前看的是哪一個五年階段：1=111-115, 2=116-120, 3=121-125
+    let currentExamPhase = 1; 
     const excelFileName = '114_teacher_record.xlsx';
 
-    // 🎯 正確的 2人輪值律：5年一循環，出題4次的輪值順序：盧◯-->李◯-->藺◯-->曹◯-->張◯
     const yearPairs = {
         0: ["盧◯", "李◯"], 
         1: ["藺◯", "曹◯"], 
@@ -476,7 +484,6 @@
                 </div>
             `;
         } else {
-            // 📝 段考命題模式
             const activeP1 = currentExamPhase === 1 ? 'active' : '';
             const activeP2 = currentExamPhase === 2 ? 'active' : '';
             const activeP3 = currentExamPhase === 3 ? 'active' : '';
