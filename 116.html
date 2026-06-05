@@ -493,13 +493,13 @@
 
             if (currentExamPhase === 1) {
                 titleText = "111～115年_命題4次";
-                targetTableHtml = generate5YearTableHtml(111, 115, t.name(4));
+                targetTableHtml = generate5YearTableHtml(111, 115, t.name);
             } else if (currentExamPhase === 2) {
                 titleText = "116～120年_命題4次";
-                targetTableHtml = generate5YearTableHtml(116, 120, t.name(4));
+                targetTableHtml = generate5YearTableHtml(116, 120, t.name);
             } else {
                 titleText = "121～125年_命題4次";
-                targetTableHtml = generate5YearTableHtml(121, 125, t.name(4));
+                targetTableHtml = generate5YearTableHtml(121, 125, t.name);
             }
 
             targetDiv.innerHTML = `
