@@ -22,7 +22,7 @@
             --success-green: #2ecc71;   
             --danger-red: #e74c3c;      
             
-            /* === 新增：優雅淡紫色系 === */
+            /* === 優雅淡紫色系 === */
             --accent-purple: #9b59b6;   
             --accent-purple-hover: rgba(155, 89, 182, 0.2);
             
@@ -81,7 +81,7 @@
         .sub-tab-btn.theme-seminar:hover { background: rgba(52, 152, 219, 0.15); color: #fff; }
         .sub-tab-btn.active.theme-seminar { background: var(--accent-blue); color: white; border-color: var(--accent-blue); box-shadow: 0 2px 8px rgba(52, 152, 219, 0.4); }
         
-        /* 📝 段考命題按鈕樣式：全面修正為優雅淡紫色 */
+        /* 📝 段考命題按鈕樣式：淡紫色 */
         .sub-tab-btn.theme-exam { border-color: rgba(155, 89, 182, 0.4); color: #d2b4de; }
         .sub-tab-btn.theme-exam:hover { background: var(--accent-purple-hover); color: #fff; }
         .sub-tab-btn.active.theme-exam { background: var(--accent-purple); color: white; border-color: var(--accent-purple); box-shadow: 0 2px 8px rgba(155, 89, 182, 0.5); }
@@ -97,58 +97,57 @@
         .summary-card h4 { font-size: 16px; color: var(--text-muted); margin-bottom: 2px; font-weight: bold; }
         .summary-card p { font-size: 26px; font-weight: bold; color: var(--text-on-primary); }
         .summary-card .blue-highlight { color: var(--accent-blue); }
-        .summary-card .purple-highlight { color: #c39bd3; } /* 命題專用淡紫高亮數值 */
+        .summary-card .purple-highlight { color: #c39bd3; font-size: 30px; } 
         
         .summary-box-card { background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px; text-align: center; border: 1px solid var(--border-color); }
         .summary-box-card h4 { font-size: 16px; color: var(--text-muted); margin-bottom: 2px; font-weight: bold; }
         .summary-box-card p { font-size: 32px; font-weight: bold; color: var(--accent-gold); }
         
         /* 側邊裝飾條標題 */
-        .history-title { margin: 10px 0 8px 0; font-size: 24px; font-weight: bold; color: var(--text-on-primary); border-left: 5px solid var(--accent-blue); padding-left: 10px; line-height: 1.3; }
+        .history-title { margin: 18px 0 8px 0; font-size: 24px; font-weight: bold; color: var(--text-on-primary); border-left: 5px solid var(--accent-blue); padding-left: 10px; line-height: 1.3; }
         
         /* 表格響應式包覆層 */
-        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 20px; border-radius: 6px; border: 1px solid var(--border-color); }
 
-        /* 表格結構樣式 */
-        table { width: 100%; border-collapse: collapse; text-align: center; }
-        th, td { padding: 8px 6px; border-bottom: 1px solid var(--border-color); font-size: 22px; text-align: center; vertical-align: middle; color: var(--text-main); white-space: nowrap; }
-        th { background-color: var(--table-header-bg); color: var(--text-main); font-weight: bold; } 
-        tr:hover { background-color: rgba(255, 255, 255, 0.02); } 
-        td strong { font-size: 22px; color: var(--text-on-primary); }
-        .no-data { color: var(--text-muted); text-align: center; padding: 15px; font-size: 22px; }
+        /* 輪值表專用表格樣式 */
+        .rotation-table { width: 100%; border-collapse: collapse; text-align: center; background: rgba(255,255,255,0.01); }
+        .rotation-table th, .rotation-table td { padding: 12px 10px; border: 1px solid var(--border-color); font-size: 22px; text-align: center; vertical-align: middle; white-space: nowrap; }
+        .rotation-table th { background-color: var(--table-header-bg); color: var(--text-main); font-weight: bold; }
+        .rotation-table td { color: var(--text-main); height: 55px; }
         
-        /* 檢視按鈕與縮圖 */
+        /* 當前選擇教師且是115年出題時的高亮樣式（優雅淡紫） */
+        .highlight-current-teacher { background-color: rgba(155, 89, 182, 0.4) !important; color: #ffffff !important; font-weight: bold; border: 2px solid var(--accent-purple) !important; }
+        /* 一般被選中教師在其他年份的高亮 */
+        .highlight-other-year { background-color: rgba(255, 255, 255, 0.12); color: var(--accent-gold); font-weight: bold; }
+        /* 115本學年度欄位醒目外框 */
+        .col-115 { border-left: 2px solid var(--accent-blue) !important; border-right: 2px solid var(--accent-blue) !important; }
+        .th-115 { background-color: #2c3e50 !important; color: #5dade2 !important; border-left: 2px solid var(--accent-blue) !important; border-right: 2px solid var(--accent-blue) !important; }
+
         .btn-view { padding: 5px 14px; background-color: var(--accent-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 20px; }
         .doc-thumbnail { display: inline-block; height: 45px; width: auto; border-radius: 4px; cursor: pointer; transition: transform 0.2s; border: 1px solid var(--border-color); vertical-align: middle; }
         .doc-thumbnail:hover { transform: scale(1.1); }
         
-        /* 全螢幕放大燈箱 */
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--overlay-bg); z-index: 9999; justify-content: center; align-items: center; }
         .overlay.active { display: flex; }
         .full-doc-image { max-width: 95%; max-height: 85%; border-radius: 6px; border: 2px solid #fff; object-fit: contain; }
         .overlay-close-btn { position: absolute; top: 20px; right: 25px; color: #fff; font-size: 45px; font-weight: bold; cursor: pointer; }
 
-        /* === 響應式佈局 RWD === */
         @media (max-width: 768px) {
             body { padding: 6px; }
             * { font-size: 16px; }
-            th, td { font-size: 16px; padding: 6px 3px; }
-            td strong { font-size: 16px; }
+            .rotation-table th, .rotation-table td { font-size: 16px; padding: 8px 4px; height: 45px; }
             .tab-btn { font-size: 20px; padding: 8px 6px; }
             .sub-tab-btn { font-size: 16px; padding: 6px 12px; }
             select { font-size: 16px; padding: 6px 10px; }
             .summary-card p { font-size: 20px !important; }
             .summary-box-card p { font-size: 22px !important; }
             .history-title { font-size: 18px; }
-            .btn-view { padding: 4px 6px; font-size: 16px; }
-            .doc-thumbnail { width: 35px; height: 35px; object-fit: cover; }
         }
 
         @media (min-width: 769px) {
             .personal-select-wrapper { flex-direction: row; align-items: center; }
             .personal-select-wrapper label { white-space: nowrap; }
             .summary-box { grid-template-columns: repeat(4, 1fr); }
-            th, td { font-size: 22px; padding: 10px 12px; }
         }
     </style>
 </head>
@@ -164,23 +163,21 @@
     </div>
 
     <div class="main-content" id="main-content">
-        <!-- 主分頁籤 -->
         <div class="nav-tabs">
             <button class="tab-btn" onclick="switchView('overview')">全體總覽</button>
             <button class="tab-btn active" onclick="switchView('personal')">個人紀錄</button>
         </div>
 
-        <!-- 全體總覽區 -->
         <div id="overview-view" class="view-section">
             <h3>全體教師成果摘要</h3>
             <div class="table-responsive">
-                <table>
+                <table class="rotation-table">
                     <thead>
                         <tr>
                             <th>序號</th>
                             <th>姓名</th>
                             <th>研習總次數</th>
-                            <th>命題總次數</th>
+                            <th>111~125總命題</th>
                             <th>操作</th>
                         </tr>
                     </thead>
@@ -189,27 +186,22 @@
             </div>
         </div>
 
-        <!-- 個人紀錄區 -->
         <div id="personal-view" class="view-section active">
-            <!-- 下拉選單 -->
             <div class="personal-select-wrapper">
                 <label for="teacher-select">請選擇教師：</label>
                 <select id="teacher-select" onchange="changedTeacher(this.value)"></select>
             </div>
             
-            <!-- 子功能頁籤按鈕群組 -->
             <div class="sub-tabs-container">
                 <button id="sub-tab-seminar" class="sub-tab-btn active theme-seminar" onclick="switchSubTab('seminar')">📘 研習紀錄</button>
                 <button id="sub-tab-exam" class="sub-tab-btn theme-exam" onclick="switchSubTab('exam')">📝 段考命題</button>
             </div>
 
-            <!-- 動態渲染呈現區 -->
             <div id="dynamic-personal-zone"></div>
         </div>
     </div>
 </div>
 
-<!-- 燈箱 -->
 <div id="doc-overlay" class="overlay" onclick="closeDoc()">
     <span class="overlay-close-btn">&times;</span>
     <img src="" alt="圖片放大圖" id="full-doc-image" class="full-doc-image">
@@ -218,8 +210,29 @@
 <script>
     let systemData = []; 
     let currentSubTab = 'seminar'; 
-    const currentYearKey = "115出題次數"; 
     const excelFileName = '114_teacher_record.xlsx';
+
+    // 🎯 正確的 2人輪值律：5年一循環
+    // 111年：盧、李 | 112年：蘭、曹 | 113年：張、盧 | 114年：李、蘭 | 115年：曹、張
+    const yearPairs = {
+        0: ["盧◯", "李◯"], // 餘數 0 (111, 116, 121)
+        1: ["蘭◯", "曹◯"], // 餘數 1 (112, 117, 122)
+        2: ["張◯", "盧◯"], // 餘數 2 (113, 118, 123)
+        3: ["李◯", "蘭◯"], // 餘數 3 (114, 119, 124)
+        4: ["曹◯", "張◯"]  // 餘數 4 (115, 120, 125)
+    };
+    
+    // 全自動精準演算法：輸入年份，直接吐出該年「真正負責出題的 2 位老師」
+    function getExamTeachersByYear(year) {
+        const cycleIndex = (year - 111) % 5;
+        return yearPairs[cycleIndex] || [];
+    }
+
+    // 事前算出 111 到 125 年所有資料
+    let globalExamSchedule = {};
+    for (let y = 111; y <= 125; y++) {
+        globalExamSchedule[y] = getExamTeachersByYear(y);
+    }
 
     window.addEventListener('DOMContentLoaded', () => {
         fetch(excelFileName)
@@ -233,9 +246,8 @@
                 
                 const sheetTeachers = XLSX.utils.sheet_to_json(workbook.Sheets["教師名稱"] || workbook.Sheets[0]);
                 const sheetRecords = XLSX.utils.sheet_to_json(workbook.Sheets["研習紀錄"] || []);
-                const sheetExams = XLSX.utils.sheet_to_json(workbook.Sheets["段考命題"] || []);
                 
-                mergeDatabase(sheetTeachers, sheetRecords, sheetExams);
+                mergeDatabase(sheetTeachers, sheetRecords);
 
                 document.getElementById('file-status').textContent = `成功同步雲端資料...`;
                 document.getElementById('file-status').className = "status-badge loaded";
@@ -250,8 +262,7 @@
             });
     });
 
-    // 核心智慧演算法（完全保留 114～150年 動態擴充功能）
-    function mergeDatabase(teachers, records, exams) {
+    function mergeDatabase(teachers, records) {
         systemData = teachers.map(t => {
             const id = String(t["職碼"] || "").trim();
             const name = String(t["姓名"] || "").trim();
@@ -266,38 +277,22 @@
                 resultDoc: String(r["研習結果"] || "").trim() 
             })).filter(r => r.date !== "");
 
-            const matchedExamRow = exams.find(e => String(e["職碼"] || "").trim() === id || String(e["姓名"] || "").trim() === name) || {};
+            // 算真正命題統計（每年有輪到就是出題 4 次）
+            let examNew = 0;      
+            let examHistory = 0;  
             
-            let examNew = 0;   
-            let examHistory = 0; 
-            let allYearList = []; 
-
-            Object.keys(matchedExamRow).forEach(key => {
-                if (key.includes("出題次數")) {
-                    const countVal = parseInt(matchedExamRow[key]) || 0;
-                    const cleanKey = key.replace("出題次數", "").trim();
-                    
-                    allYearList.push({ year: cleanKey, count: countVal });
-
-                    if (key === currentYearKey) {
-                        examNew = countVal; 
+            for(let y=111; y<=125; y++) {
+                const isAssigned = globalExamSchedule[y].some(tName => name.includes(tName.replace("◯","")) || tName.includes(name.replace("◯","")));
+                if(isAssigned) {
+                    if(y === 115) {
+                        examNew = 4;
                     } else {
-                        examHistory += countVal; 
+                        examHistory += 4;
                     }
                 }
-            });
+            }
 
-            allYearList.sort((a, b) => parseInt(a.year) - parseInt(b.year));
-
-            return { 
-                id, 
-                name, 
-                seminarPrev, 
-                records: matchedRecords, 
-                examNew, 
-                examHistory, 
-                allYearList 
-            };
+            return { id, name, seminarPrev, records: matchedRecords, examNew, examHistory };
         }).filter(t => t.id !== "");
     }
 
@@ -370,6 +365,48 @@
         });
     }
 
+    // 🔨 精準呈現：每年只有 2 個橫列有名字的表格生成器
+    function generate5YearTableHtml(startYear, endYear, currentTeacherName) {
+        let thHtml = '<tr>';
+        for (let y = startYear; y <= endYear; y++) {
+            const class115 = (y === 115) ? 'class="th-115"' : '';
+            thHtml += `<th ${class115}>${y} 年</th>`;
+        }
+        thHtml += '</tr>';
+
+        // 每年上限就是 2 位老師負責出題，所以固定產出 2 列即可，完美還原手寫感
+        let rowsHtml = '';
+        for (let rowIdx = 0; rowIdx < 2; rowIdx++) {
+            rowsHtml += '<tr>';
+            for (let y = startYear; y <= endYear; y++) {
+                const teachers = globalExamSchedule[y];
+                const teacherName = teachers[rowIdx] || "";
+                
+                const isCurrent = currentTeacherName.includes(teacherName.replace("◯","")) || teacherName.includes(currentTeacherName.replace("◯",""));
+                
+                let cellClass = '';
+                if (isCurrent && teacherName !== "") {
+                    // 如果選中的是 115年 且是自己 -> 噴發淡紫色
+                    cellClass = (y === 115) ? 'class="highlight-current-teacher col-115"' : 'class="highlight-other-year"';
+                } else if (y === 115) {
+                    cellClass = 'class="col-115"';
+                }
+
+                rowsHtml += `<td ${cellClass}>${teacherName}</td>`;
+            }
+            rowsHtml += '</tr>';
+        }
+
+        return `
+            <div class="table-responsive">
+                <table class="rotation-table">
+                    <thead>${thHtml}</thead>
+                    <tbody>${rowsHtml}</tbody>
+                </table>
+            </div>
+        `;
+    }
+
     function renderPersonalZone(id) {
         const t = systemData.find(teacher => teacher.id === id);
         const targetDiv = document.getElementById('dynamic-personal-zone');
@@ -408,7 +445,7 @@
                 </div>
                 <div class="history-title">今年研習明細</div>
                 <div class="table-responsive">
-                    <table>
+                    <table class="rotation-table">
                         <thead>
                             <tr>
                                 <th>研習日期</th>
@@ -424,45 +461,30 @@
                 </div>
             `;
         } else {
+            // 📝 段考命題模式
             const totalExam = t.examNew + t.examHistory;
-            let ths = '';
-            let tds = '';
-            
-            if (t.allYearList.length === 0) {
-                ths = '<th>尚未建立任何年度欄位</th>';
-                tds = '<td>-</td>';
-            } else {
-                t.allYearList.forEach(item => {
-                    if(item.year === "115") {
-                        ths += `<th style="background-color: rgba(155, 89, 182, 0.2); color: #e8daef;">${item.year}學年</th>`;
-                        tds += `<td style="background-color: rgba(155, 89, 182, 0.1);"><strong style="color: #e8daef;">${item.count} 次</strong></td>`;
-                    } else {
-                        ths += `<th>${item.year}學年</th>`;
-                        tds += `<td>${item.count} 次</td>`;
-                    }
-                });
-                ths += `<th style="background-color: var(--table-header-bg); color: var(--accent-gold);">命題總累計</th>`;
-                tds += `<td><strong style="color: var(--accent-gold); font-size: 24px;">${totalExam} 次</strong></td>`;
-            }
+
+            // 產出三個 5年一期的精美輪值表格 (只呈現出題的2人)
+            const table111to115 = generate5YearTableHtml(111, 115, t.name);
+            const table116to120 = generate5YearTableHtml(116, 120, t.name);
+            const table121to125 = generate5YearTableHtml(121, 125, t.name);
 
             targetDiv.innerHTML = `
                 <div class="summary-box">
                     <div class="summary-card"><h4>命題人員</h4><p>${t.name}</p></div>
                     <div class="summary-card"><h4>歷年累計</h4><p>${t.examHistory}次</p></div>
-                    <div class="summary-card"><h4>115 出題次數</h4><p class="purple-highlight">+${t.examNew}次</p></div>
-                    <div class="summary-box-card"><h4>命題總累計</h4><p>${totalExam}</p></div>
+                    <div class="summary-card"><h4>115 今年新增</h4><p class="purple-highlight">+${t.examNew}次</p></div>
+                    <div class="summary-box-card"><h4>111~125總計</h4><p>${totalExam}次</p></div>
                 </div>
-                <div class="history-title" style="border-left-color: var(--accent-purple);">114年至150年 命題明細全覽 (可左右滑動查看)</div>
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>${ths}</tr>
-                        </thead>
-                        <tbody>
-                            <tr>${tds}</tr>
-                        </tbody>
-                    </table>
-                </div>
+                
+                <div class="history-title" style="border-left-color: var(--accent-purple);">第一階段：111年 ～ 115年 命題輪值 (每年2位負責)</div>
+                ${table111to115}
+                
+                <div class="history-title" style="border-left-color: var(--accent-purple);">第二階段：116年 ～ 120年 命題輪值 (每年2位負責)</div>
+                ${table116to120}
+                
+                <div class="history-title" style="border-left-color: var(--accent-purple);">第三階段：121年 ～ 125年 命題輪值 (每年2位負責)</div>
+                ${table121to125}
             `;
         }
     }
