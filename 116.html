@@ -86,7 +86,7 @@
         .sub-tab-btn.theme-exam:hover { background: var(--accent-purple-hover); color: #fff; }
         .sub-tab-btn.active.theme-exam { background: var(--accent-purple); color: white; border-color: var(--accent-purple); box-shadow: 0 2px 8px rgba(155, 89, 182, 0.5); }
 
-        /* 🆕 命題輪值專用：階段切換鈕樣式 */
+        /* 命題輪值專用：階段切換鈕樣式 */
         .phase-tabs-container { display: flex; gap: 8px; margin: 12px 0; background: rgba(255,255,255,0.03); padding: 6px; border-radius: 8px; border: 1px solid var(--border-color); }
         .phase-tab-btn { flex: 1; padding: 8px 10px; background: transparent; border: none; border-radius: 6px; color: var(--text-muted); font-size: 20px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; text-align: center; }
         .phase-tab-btn:hover { background: rgba(155, 89, 182, 0.1); color: #fff; }
@@ -217,7 +217,7 @@
 <script>
     let systemData = []; 
     let currentSubTab = 'seminar'; 
-    let currentExamPhase = 1; // 🆕 追蹤當前看的是哪一個五年階段：1=111-115, 2=116-120, 3=121-125
+    let currentExamPhase = 1; // 追蹤當前看的是哪一個五年階段：1=111-115, 2=116-120, 3=121-125
     const excelFileName = '114_teacher_record.xlsx';
 
     // 🎯 正確的 2人輪值律：5年一循環
@@ -330,10 +330,8 @@
         renderPersonalZone(document.getElementById('teacher-select').value);
     }
 
-    // 🆕 切換五年期階段按鈕的控制函式
     function switchPhase(phaseNum) {
         currentExamPhase = phaseNum;
-        // 重新渲染畫面
         renderPersonalZone(document.getElementById('teacher-select').value);
     }
 
@@ -469,15 +467,11 @@
                 </div>
             `;
         } else {
-            // 📝 段考命題模式
-            const totalExam = t.examNew + t.examHistory;
-
-            // 🆕 建立三個按鈕的動態開關狀態
+            // 📝 段考命題模式（根據您的要求已完全去除 summary-box 四個大字卡）
             const activeP1 = currentExamPhase === 1 ? 'active' : '';
             const activeP2 = currentExamPhase === 2 ? 'active' : '';
             const activeP3 = currentExamPhase === 3 ? 'active' : '';
 
-            // 根據目前選擇的階段，決定生成哪一個表格與標題文字
             let targetTableHtml = '';
             let titleText = '';
 
@@ -493,20 +487,13 @@
             }
 
             targetDiv.innerHTML = `
-                <div class="summary-box">
-                    <div class="summary-card"><h4>命題人員</h4><p>${t.name}</p></div>
-                    <div class="summary-card"><h4>歷年累計</h4><p>${t.examHistory}次</p></div>
-                    <div class="summary-card"><h4>115 今年新增</h4><p class="purple-highlight">+${t.examNew}次</p></div>
-                    <div class="summary-box-card"><h4>111~125總計</h4><p>${totalExam}次</p></div>
-                </div>
-                
                 <div class="phase-tabs-container">
                     <button class="phase-tab-btn ${activeP1}" onclick="switchPhase(1)">111 ~ 115年</button>
                     <button class="phase-tab-btn ${activeP2}" onclick="switchPhase(2)">116 ~ 120年</button>
                     <button class="phase-tab-btn ${activeP3}" onclick="switchPhase(3)">121 ~ 125年</button>
                 </div>
 
-                <div class="history-title" style="border-left-color: var(--accent-purple);">${titleText}</div>
+                <div class="history-title" style="border-left-color: var(--accent-purple); margin-top: 10px;">${titleText}</div>
                 ${targetTableHtml}
             `;
         }
