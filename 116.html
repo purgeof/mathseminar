@@ -184,7 +184,6 @@
                             <th>序號</th>
                             <th>姓名</th>
                             <th>研習總次數</th>
-                            <th>111~125總命題</th>
                             <th>操作</th>
                         </tr>
                     </thead>
@@ -361,13 +360,11 @@
         tbody.innerHTML = '';
         systemData.forEach(t => {
             const semNew = t.records.reduce((sum, r) => sum + r.count, 0);
-            const totalExam = t.examNew + t.examHistory;
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td><strong>${t.id}</strong></td>
                 <td><strong>${t.name}</strong></td>
                 <td><span class="final-count">${t.seminarPrev + semNew} 次</span></td>
-                <td><span>${totalExam} 次</span></td>
                 <td><button class="btn-view" onclick="viewTeacherDetail('${t.id}')">檢視</button></td>
             `;
             tbody.appendChild(tr);
@@ -467,7 +464,7 @@
                 </div>
             `;
         } else {
-            // 📝 段考命題模式（根據您的要求已完全去除 summary-box 四個大字卡）
+            // 📝 段考命題模式
             const activeP1 = currentExamPhase === 1 ? 'active' : '';
             const activeP2 = currentExamPhase === 2 ? 'active' : '';
             const activeP3 = currentExamPhase === 3 ? 'active' : '';
