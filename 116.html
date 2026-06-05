@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>114學年度</title>
+    <title>114學年度--教師成果整合管理系統</title>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
@@ -21,6 +21,10 @@
             --accent-gold: #f39c12;     
             --success-green: #2ecc71;   
             --danger-red: #e74c3c;      
+            
+            /* === 新增：優雅淡紫色系 === */
+            --accent-purple: #9b59b6;   
+            --accent-purple-hover: rgba(155, 89, 182, 0.2);
             
             --border-color: #383838;    
             --overlay-bg: rgba(0, 0, 0, 0.95); 
@@ -70,9 +74,17 @@
 
         /* 子功能頁籤按鈕群組 */
         .sub-tabs-container { display: flex; gap: 12px; margin-bottom: 15px; }
-        .sub-tab-btn { padding: 6px 18px; background: #2b2b2b; border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer; font-size: 20px; font-weight: bold; color: var(--text-muted); transition: all 0.2s; display: flex; align-items: center; gap: 5px; }
-        .sub-tab-btn.active.theme-seminar { background: var(--accent-blue); color: white; border-color: var(--accent-blue); }
-        .sub-tab-btn.active.theme-exam { background: #3c3c3c; color: white; border-color: #666; box-shadow: inset 0 0 5px rgba(0,0,0,0.5); }
+        .sub-tab-btn { padding: 8px 20px; background: #2b2b2b; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; font-size: 20px; font-weight: bold; color: var(--text-muted); transition: all 0.25s dashed; display: flex; align-items: center; gap: 6px; }
+        
+        /* 📘 研習紀錄按鈕樣式 */
+        .sub-tab-btn.theme-seminar { border-color: rgba(52, 152, 219, 0.4); }
+        .sub-tab-btn.theme-seminar:hover { background: rgba(52, 152, 219, 0.15); color: #fff; }
+        .sub-tab-btn.active.theme-seminar { background: var(--accent-blue); color: white; border-color: var(--accent-blue); box-shadow: 0 2px 8px rgba(52, 152, 219, 0.4); }
+        
+        /* 📝 段考命題按鈕樣式：全面修正為優雅淡紫色 */
+        .sub-tab-btn.theme-exam { border-color: rgba(155, 89, 182, 0.4); color: #d2b4de; }
+        .sub-tab-btn.theme-exam:hover { background: var(--accent-purple-hover); color: #fff; }
+        .sub-tab-btn.active.theme-exam { background: var(--accent-purple); color: white; border-color: var(--accent-purple); box-shadow: 0 2px 8px rgba(155, 89, 182, 0.5); }
 
         /* 檢視區塊卡片 */
         .view-section { background: var(--card-bg); padding: 12px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid var(--border-color); display: none; }
@@ -85,6 +97,8 @@
         .summary-card h4 { font-size: 16px; color: var(--text-muted); margin-bottom: 2px; font-weight: bold; }
         .summary-card p { font-size: 26px; font-weight: bold; color: var(--text-on-primary); }
         .summary-card .blue-highlight { color: var(--accent-blue); }
+        .summary-card .purple-highlight { color: #c39bd3; } /* 命題專用淡紫高亮數值 */
+        
         .summary-box-card { background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px; text-align: center; border: 1px solid var(--border-color); }
         .summary-box-card h4 { font-size: 16px; color: var(--text-muted); margin-bottom: 2px; font-weight: bold; }
         .summary-box-card p { font-size: 32px; font-weight: bold; color: var(--accent-gold); }
@@ -121,7 +135,7 @@
             th, td { font-size: 16px; padding: 6px 3px; }
             td strong { font-size: 16px; }
             .tab-btn { font-size: 20px; padding: 8px 6px; }
-            .sub-tab-btn { font-size: 16px; padding: 5px 12px; }
+            .sub-tab-btn { font-size: 16px; padding: 6px 12px; }
             select { font-size: 16px; padding: 6px 10px; }
             .summary-card p { font-size: 20px !important; }
             .summary-box-card p { font-size: 22px !important; }
@@ -150,11 +164,13 @@
     </div>
 
     <div class="main-content" id="main-content">
+        <!-- 主分頁籤 -->
         <div class="nav-tabs">
             <button class="tab-btn" onclick="switchView('overview')">全體總覽</button>
             <button class="tab-btn active" onclick="switchView('personal')">個人紀錄</button>
         </div>
 
+        <!-- 全體總覽區 -->
         <div id="overview-view" class="view-section">
             <h3>全體教師成果摘要</h3>
             <div class="table-responsive">
@@ -173,22 +189,27 @@
             </div>
         </div>
 
+        <!-- 個人紀錄區 -->
         <div id="personal-view" class="view-section active">
+            <!-- 下拉選單 -->
             <div class="personal-select-wrapper">
                 <label for="teacher-select">請選擇教師：</label>
                 <select id="teacher-select" onchange="changedTeacher(this.value)"></select>
             </div>
             
+            <!-- 子功能頁籤按鈕群組 -->
             <div class="sub-tabs-container">
                 <button id="sub-tab-seminar" class="sub-tab-btn active theme-seminar" onclick="switchSubTab('seminar')">📘 研習紀錄</button>
                 <button id="sub-tab-exam" class="sub-tab-btn theme-exam" onclick="switchSubTab('exam')">📝 段考命題</button>
             </div>
 
+            <!-- 動態渲染呈現區 -->
             <div id="dynamic-personal-zone"></div>
         </div>
     </div>
 </div>
 
+<!-- 燈箱 -->
 <div id="doc-overlay" class="overlay" onclick="closeDoc()">
     <span class="overlay-close-btn">&times;</span>
     <img src="" alt="圖片放大圖" id="full-doc-image" class="full-doc-image">
@@ -197,7 +218,7 @@
 <script>
     let systemData = []; 
     let currentSubTab = 'seminar'; 
-    const currentYearKey = "115出題次數"; // 設定當前年度欄位名稱
+    const currentYearKey = "115出題次數"; 
     const excelFileName = '114_teacher_record.xlsx';
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -229,13 +250,12 @@
             });
     });
 
-    // 🚀【超核心智慧演算法】: 無論欄位延伸到幾年，自動迴圈計算
+    // 核心智慧演算法（完全保留 114～150年 動態擴充功能）
     function mergeDatabase(teachers, records, exams) {
         systemData = teachers.map(t => {
             const id = String(t["職碼"] || "").trim();
             const name = String(t["姓名"] || "").trim();
             
-            // 1. 研習紀錄處理
             const seminarPrev = parseInt(t["歷史截止累計"]) || 0;
             const matchedRecords = records.filter(r => String(r["姓名"] || "").trim() === name).map(r => ({
                 date: String(r["研習日期"] || "").trim(),
@@ -246,30 +266,27 @@
                 resultDoc: String(r["研習結果"] || "").trim() 
             })).filter(r => r.date !== "");
 
-            // 2. 段考命題動態欄位掃描 (114年～150年通用)
             const matchedExamRow = exams.find(e => String(e["職碼"] || "").trim() === id || String(e["姓名"] || "").trim() === name) || {};
             
-            let examNew = 0;   // 存放今年新增 (115年)
-            let examHistory = 0; // 存放歷年累計 (包含114、116~150年所有的加總)
-            let allYearList = []; // 用來產生下方明細表格的所有年度清單
+            let examNew = 0;   
+            let examHistory = 0; 
+            let allYearList = []; 
 
-            // 智慧過濾：自動找出所有含有「出題次數」的欄位
             Object.keys(matchedExamRow).forEach(key => {
                 if (key.includes("出題次數")) {
                     const countVal = parseInt(matchedExamRow[key]) || 0;
-                    const cleanKey = key.replace("出題次數", "").trim(); // 萃取出年份數字 (如 "114")
+                    const cleanKey = key.replace("出題次數", "").trim();
                     
                     allYearList.push({ year: cleanKey, count: countVal });
 
                     if (key === currentYearKey) {
-                        examNew = countVal; // 如果剛好是 115出題次數，歸類到今年
+                        examNew = countVal; 
                     } else {
-                        examHistory += countVal; // 其餘通通歸到歷年
+                        examHistory += countVal; 
                     }
                 }
             });
 
-            // 照年份從小到大排序明細
             allYearList.sort((a, b) => parseInt(a.year) - parseInt(b.year));
 
             return { 
@@ -359,7 +376,6 @@
         if (!t) { targetDiv.innerHTML = ''; return; }
 
         if (currentSubTab === 'seminar') {
-            // 【研習模式】
             const newCount = t.records.reduce((sum, r) => sum + r.count, 0);
             const totalCount = t.seminarPrev + newCount;
 
@@ -408,10 +424,7 @@
                 </div>
             `;
         } else {
-            // 【命題模式】四大卡片動態顯示 114~150 統計加總
             const totalExam = t.examNew + t.examHistory;
-
-            // 動態生成下方的橫向滾動所有年度表格表頭與內容
             let ths = '';
             let tds = '';
             
@@ -420,16 +433,14 @@
                 tds = '<td>-</td>';
             } else {
                 t.allYearList.forEach(item => {
-                    // 如果是今年(115)，給予特殊顏色突顯
                     if(item.year === "115") {
-                        ths += `<th style="background-color: #2c3e50; color: var(--accent-blue);">${item.year}學年</th>`;
-                        tds += `<td style="background-color: rgba(52, 152, 219, 0.1);"><strong style="color: var(--accent-blue);">${item.count} 次</strong></td>`;
+                        ths += `<th style="background-color: rgba(155, 89, 182, 0.2); color: #e8daef;">${item.year}學年</th>`;
+                        tds += `<td style="background-color: rgba(155, 89, 182, 0.1);"><strong style="color: #e8daef;">${item.count} 次</strong></td>`;
                     } else {
                         ths += `<th>${item.year}學年</th>`;
                         tds += `<td>${item.count} 次</td>`;
                     }
                 });
-                // 追加總計欄位
                 ths += `<th style="background-color: var(--table-header-bg); color: var(--accent-gold);">命題總累計</th>`;
                 tds += `<td><strong style="color: var(--accent-gold); font-size: 24px;">${totalExam} 次</strong></td>`;
             }
@@ -438,10 +449,10 @@
                 <div class="summary-box">
                     <div class="summary-card"><h4>命題人員</h4><p>${t.name}</p></div>
                     <div class="summary-card"><h4>歷年累計</h4><p>${t.examHistory}次</p></div>
-                    <div class="summary-card"><h4>115 出題次數</h4><p class="blue-highlight">+${t.examNew}次</p></div>
+                    <div class="summary-card"><h4>115 出題次數</h4><p class="purple-highlight">+${t.examNew}次</p></div>
                     <div class="summary-box-card"><h4>命題總累計</h4><p>${totalExam}</p></div>
                 </div>
-                <div class="history-title" style="border-left-color: var(--accent-gold);">114年至150年 命題明細全覽 (可左右滑動查看)</div>
+                <div class="history-title" style="border-left-color: var(--accent-purple);">114年至150年 命題明細全覽 (可左右滑動查看)</div>
                 <div class="table-responsive">
                     <table>
                         <thead>
