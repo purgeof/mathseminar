@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>114學年度--教師成果整合管理系統</title>
+    <title>115學年度</title>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
@@ -162,7 +162,7 @@
 
 <div class="container">
     <header>
-        <h1>114學年度--教師成果整合管理系統</h1>
+        <h1>115學年度</h1>
     </header>
 
     <div class="status-zone">
@@ -176,7 +176,7 @@
         </div>
 
         <div id="overview-view" class="view-section">
-            <h3>全體教師成果摘要</h3>
+            <h3>全體人員摘要</h3>
             <div class="table-responsive">
                 <table class="rotation-table">
                     <thead>
@@ -195,13 +195,13 @@
 
         <div id="personal-view" class="view-section active">
             <div class="personal-select-wrapper">
-                <label for="teacher-select">請選擇教師：</label>
+                <label for="teacher-select">請選擇人員：</label>
                 <select id="teacher-select" onchange="changedTeacher(this.value)"></select>
             </div>
             
             <div class="sub-tabs-container">
                 <button id="sub-tab-seminar" class="sub-tab-btn active theme-seminar" onclick="switchSubTab('seminar')">📘 研習紀錄</button>
-                <button id="sub-tab-exam" class="sub-tab-btn theme-exam" onclick="switchSubTab('exam')">📝 段考命題</button>
+                <button id="sub-tab-exam" class="sub-tab-btn theme-exam" onclick="switchSubTab('exam')">📝 命題次數(4)</button>
             </div>
 
             <div id="dynamic-personal-zone"></div>
@@ -476,13 +476,13 @@
             let titleText = '';
 
             if (currentExamPhase === 1) {
-                titleText = "第一階段：111年 ～ 115年 命題輪值 (每年2位負責)";
+                titleText = "111～115年_命題4次";
                 targetTableHtml = generate5YearTableHtml(111, 115, t.name);
             } else if (currentExamPhase === 2) {
-                titleText = "第二階段：116年 ～ 120年 命題輪值 (每年2位負責)";
+                titleText = "116～120年_命題4次";
                 targetTableHtml = generate5YearTableHtml(116, 120, t.name);
             } else {
-                titleText = "第三階段：121年 ～ 125年 命題輪值 (每年2位負責)";
+                titleText = "121～125年_命題4次";
                 targetTableHtml = generate5YearTableHtml(121, 125, t.name);
             }
 
