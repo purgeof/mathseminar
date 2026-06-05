@@ -69,10 +69,9 @@
         .personal-select-wrapper label { font-size: 22px; font-weight: bold; color: var(--text-main); }
         select { width: 100%; padding: 8px 16px; font-size: 22px; font-weight: bold; border-radius: 6px; border: 2px solid var(--accent-blue); outline: none; background: var(--card-bg); color: var(--text-main); cursor: pointer; }
 
-        /* === 依據截圖新增/修正的子頁籤區塊位置 === */
+        /* 子功能頁籤按鈕群組（緊鄰下拉選單下方） */
         .sub-tabs-container { display: flex; gap: 12px; margin-bottom: 15px; }
         .sub-tab-btn { padding: 6px 18px; background: #2b2b2b; border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer; font-size: 20px; font-weight: bold; color: var(--text-muted); transition: all 0.2s; display: flex; align-items: center; gap: 5px; }
-        /* 點選啟動時的亮色化風格 */
         .sub-tab-btn.active.theme-seminar { background: var(--accent-blue); color: white; border-color: var(--accent-blue); }
         .sub-tab-btn.active.theme-exam { background: #3c3c3c; color: white; border-color: #666; box-shadow: inset 0 0 5px rgba(0,0,0,0.5); }
 
@@ -152,13 +151,11 @@
     </div>
 
     <div class="main-content" id="main-content">
-        <!-- 主分頁籤 -->
         <div class="nav-tabs">
             <button class="tab-btn" onclick="switchView('overview')">全體總覽</button>
             <button class="tab-btn active" onclick="switchView('personal')">個人紀錄</button>
         </div>
 
-        <!-- 全體總覽區 -->
         <div id="overview-view" class="view-section">
             <h3>全體教師成果摘要</h3>
             <div class="table-responsive">
@@ -177,27 +174,22 @@
             </div>
         </div>
 
-        <!-- 個人紀錄區 -->
         <div id="personal-view" class="view-section active">
-            <!-- 下拉選單 -->
             <div class="personal-select-wrapper">
                 <label for="teacher-select">請選擇教師：</label>
                 <select id="teacher-select" onchange="changedTeacher(this.value)"></select>
             </div>
             
-            <!-- 【🎯 修正後的位置】：緊鄰下拉選單下方的子功能頁籤按鈕群組 -->
             <div class="sub-tabs-container">
                 <button id="sub-tab-seminar" class="sub-tab-btn active theme-seminar" onclick="switchSubTab('seminar')">📘 研習紀錄</button>
                 <button id="sub-tab-exam" class="sub-tab-btn theme-exam" onclick="switchSubTab('exam')">📝 段考命題</button>
             </div>
 
-            <!-- 動態渲染呈現區（包含四大字卡與下方對應明細表） -->
             <div id="dynamic-personal-zone"></div>
         </div>
     </div>
 </div>
 
-<!-- 燈箱 -->
 <div id="doc-overlay" class="overlay" onclick="closeDoc()">
     <span class="overlay-close-btn">&times;</span>
     <img src="" alt="圖片放大圖" id="full-doc-image" class="full-doc-image">
@@ -205,7 +197,7 @@
 
 <script>
     let systemData = []; 
-    let currentSubTab = 'seminar'; // 紀錄目前停在研習還是命題
+    let currentSubTab = 'seminar'; 
     const excelFileName = '114_teacher_record.xlsx';
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -218,12 +210,12 @@
                 const data = new Uint8Array(buffer);
                 const workbook = XLSX.read(data, { type: 'array' });
                 
-                // 讀取三個 Sheets (包含完備防錯)
+                // 讀取工作表
                 const sheetTeachers = XLSX.utils.sheet_to_json(workbook.Sheets["教師名稱"] || workbook.Sheets[0]);
                 const sheetRecords = XLSX.utils.sheet_to_json(workbook.Sheets["研習紀錄"] || []);
                 const sheetExams = XLSX.utils.sheet_to_json(workbook.Sheets["段考命題"] || []);
                 
-                // 整合大資料庫
+                // 整合資料結構
                 mergeDatabase(sheetTeachers, sheetRecords, sheetExams);
 
                 document.getElementById('file-status').textContent = `成功同步雲端資料...`;
@@ -239,12 +231,13 @@
             });
     });
 
+    // 核心邏輯修正：精準對應您所提供的 Excel 工作表欄位名稱
     function mergeDatabase(teachers, records, exams) {
         systemData = teachers.map(t => {
             const id = String(t["職碼"] || "").trim();
             const name = String(t["姓名"] || "").trim();
             
-            // 研習紀錄處理
+            // 1. 研習紀錄處理
             const seminarPrev = parseInt(t["歷史截止累計"]) || 0;
             const matchedRecords = records.filter(r => String(r["姓名"] || "").trim() === name).map(r => ({
                 date: String(r["研習日期"] || "").trim(),
@@ -255,12 +248,25 @@
                 resultDoc: String(r["研習結果"] || "").trim() 
             })).filter(r => r.date !== "");
 
-            // 段考命題處理 (對應 114/115 欄位結構)
+            // 2. 段考命題處理：精準對應 A、B、C、D、E、F 欄位名稱
             const matchedExamRow = exams.find(e => String(e["職碼"] || "").trim() === id || String(e["姓名"] || "").trim() === name);
-            const examPrev = matchedExamRow ? (parseInt(matchedExamRow["114 出題次數"]) || 0) : 0;
-            const examNew = matchedExamRow ? (parseInt(matchedExamRow["115 出題次數"]) || 0) : 0;
+            
+            // 抓取各年度數據，若空白或未填則自動設定預設值 0
+            const exam114 = matchedExamRow ? (parseInt(matchedExamRow["114出題次數"]) || 0) : 0;
+            const exam115 = matchedExamRow ? (parseInt(matchedExamRow["115出題次數"]) || 0) : 0;
+            const exam116 = matchedExamRow ? (parseInt(matchedExamRow["116出題次數"]) || 0) : 0;
+            const exam117 = matchedExamRow ? (parseInt(matchedExamRow["117出題次數"]) || 0) : 0;
 
-            return { id, name, seminarPrev, records: matchedRecords, examPrev, examNew };
+            return { 
+                id, 
+                name, 
+                seminarPrev, 
+                records: matchedRecords, 
+                exam114, 
+                exam115, 
+                exam116, 
+                exam117 
+            };
         }).filter(t => t.id !== "");
     }
 
@@ -320,19 +326,19 @@
         tbody.innerHTML = '';
         systemData.forEach(t => {
             const semNew = t.records.reduce((sum, r) => sum + r.count, 0);
+            const totalExam = t.exam114 + t.exam115 + t.exam116 + t.exam117;
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td><strong>${t.id}</strong></td>
                 <td><strong>${t.name}</strong></td>
                 <td><span class="final-count">${t.seminarPrev + semNew} 次</span></td>
-                <td><span>${t.examPrev + t.examNew} 次</span></td>
+                <td><span>${totalExam} 次</span></td>
                 <td><button class="btn-view" onclick="viewTeacherDetail('${t.id}')">檢視</button></td>
             `;
             tbody.appendChild(tr);
         });
     }
 
-    // 核心連動：依據子分頁類型（研習/命題），動態產生對應的四大卡片與明細表
     function renderPersonalZone(id) {
         const t = systemData.find(teacher => teacher.id === id);
         const targetDiv = document.getElementById('dynamic-personal-zone');
@@ -388,33 +394,35 @@
                 </div>
             `;
         } else {
-            // 【命題模式】
-            const totalExam = t.examPrev + t.examNew;
+            // 【命題模式】自動連動大字卡與年度名細
+            const totalExam = t.exam114 + t.exam115 + t.exam116 + t.exam117;
 
             targetDiv.innerHTML = `
                 <div class="summary-box">
                     <div class="summary-card"><h4>命題人員</h4><p>${t.name}</p></div>
-                    <div class="summary-card"><h4>114 出題次數</h4><p>${t.examPrev}次</p></div>
-                    <div class="summary-card"><h4>115 出題次數</h4><p class="blue-highlight">+${t.examNew}次</p></div>
+                    <div class="summary-card"><h4>114 出題次數</h4><p>${t.exam114}次</p></div>
+                    <div class="summary-card"><h4>115 出題次數</h4><p class="blue-highlight">+${t.exam115}次</p></div>
                     <div class="summary-box-card"><h4>命題總累計</h4><p>${totalExam}</p></div>
                 </div>
-                <div class="history-title" style="border-left-color: var(--accent-gold);">段考命題明細摘要</div>
+                <div class="history-title" style="border-left-color: var(--accent-gold);">各學年度命題明細紀錄</div>
                 <div class="table-responsive">
                     <table>
                         <thead>
                             <tr>
-                                <th>項目年度</th>
-                                <th>歷史累計次數</th>
-                                <th>本學年度出題次數</th>
-                                <th>狀態</th>
+                                <th>114出題次數</th>
+                                <th>115出題次數</th>
+                                <th>116出題次數</th>
+                                <th>117出題次數</th>
+                                <th style="color: var(--accent-gold);">命題總累計</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><strong>114~115 學年度</strong></td>
-                                <td>${t.examPrev} 次</td>
-                                <td><strong>+${t.examNew} 次</strong></td>
-                                <td style="color: var(--success-green); font-weight: bold;">已同步完成</td>
+                                <td><strong>${t.exam114} 次</strong></td>
+                                <td><strong style="color: var(--accent-blue);">${t.exam115} 次</strong></td>
+                                <td>${t.exam116} 次</td>
+                                <td>${t.exam117} 次</td>
+                                <td><strong style="color: var(--accent-gold); font-size:24px;">${totalExam} 次</strong></td>
                             </tr>
                         </tbody>
                     </table>
