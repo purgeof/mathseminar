@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>114學年度--教師成果整合管理系統</title>
+    <title>115學年度</title>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
@@ -86,6 +86,12 @@
         .sub-tab-btn.theme-exam:hover { background: var(--accent-purple-hover); color: #fff; }
         .sub-tab-btn.active.theme-exam { background: var(--accent-purple); color: white; border-color: var(--accent-purple); box-shadow: 0 2px 8px rgba(155, 89, 182, 0.5); }
 
+        /* 🆕 命題輪值專用：階段切換鈕樣式 */
+        .phase-tabs-container { display: flex; gap: 8px; margin: 12px 0; background: rgba(255,255,255,0.03); padding: 6px; border-radius: 8px; border: 1px solid var(--border-color); }
+        .phase-tab-btn { flex: 1; padding: 8px 10px; background: transparent; border: none; border-radius: 6px; color: var(--text-muted); font-size: 20px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; text-align: center; }
+        .phase-tab-btn:hover { background: rgba(155, 89, 182, 0.1); color: #fff; }
+        .phase-tab-btn.active { background: var(--accent-purple); color: #fff; box-shadow: 0 2px 6px rgba(155, 89, 182, 0.4); }
+
         /* 檢視區塊卡片 */
         .view-section { background: var(--card-bg); padding: 12px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid var(--border-color); display: none; }
         .view-section.active { display: block; }
@@ -138,6 +144,7 @@
             .rotation-table th, .rotation-table td { font-size: 16px; padding: 8px 4px; height: 45px; }
             .tab-btn { font-size: 20px; padding: 8px 6px; }
             .sub-tab-btn { font-size: 16px; padding: 6px 12px; }
+            .phase-tab-btn { font-size: 15px; padding: 6px 4px; }
             select { font-size: 16px; padding: 6px 10px; }
             .summary-card p { font-size: 20px !important; }
             .summary-box-card p { font-size: 22px !important; }
@@ -210,25 +217,23 @@
 <script>
     let systemData = []; 
     let currentSubTab = 'seminar'; 
+    let currentExamPhase = 1; // 🆕 追蹤當前看的是哪一個五年階段：1=111-115, 2=116-120, 3=121-125
     const excelFileName = '114_teacher_record.xlsx';
 
     // 🎯 正確的 2人輪值律：5年一循環
-    // 111年：盧、李 | 112年：蘭、曹 | 113年：張、盧 | 114年：李、蘭 | 115年：曹、張
     const yearPairs = {
-        0: ["盧◯", "李◯"], // 餘數 0 (111, 116, 121)
-        1: ["蘭◯", "曹◯"], // 餘數 1 (112, 117, 122)
-        2: ["張◯", "盧◯"], // 餘數 2 (113, 118, 123)
-        3: ["李◯", "蘭◯"], // 餘數 3 (114, 119, 124)
-        4: ["曹◯", "張◯"]  // 餘數 4 (115, 120, 125)
+        0: ["盧◯", "李◯"], 
+        1: ["蘭◯", "曹◯"], 
+        2: ["張◯", "盧◯"], 
+        3: ["李◯", "蘭◯"], 
+        4: ["曹◯", "張◯"]  
     };
     
-    // 全自動精準演算法：輸入年份，直接吐出該年「真正負責出題的 2 位老師」
     function getExamTeachersByYear(year) {
         const cycleIndex = (year - 111) % 5;
         return yearPairs[cycleIndex] || [];
     }
 
-    // 事前算出 111 到 125 年所有資料
     let globalExamSchedule = {};
     for (let y = 111; y <= 125; y++) {
         globalExamSchedule[y] = getExamTeachersByYear(y);
@@ -277,7 +282,6 @@
                 resultDoc: String(r["研習結果"] || "").trim() 
             })).filter(r => r.date !== "");
 
-            // 算真正命題統計（每年有輪到就是出題 4 次）
             let examNew = 0;      
             let examHistory = 0;  
             
@@ -326,6 +330,13 @@
         renderPersonalZone(document.getElementById('teacher-select').value);
     }
 
+    // 🆕 切換五年期階段按鈕的控制函式
+    function switchPhase(phaseNum) {
+        currentExamPhase = phaseNum;
+        // 重新渲染畫面
+        renderPersonalZone(document.getElementById('teacher-select').value);
+    }
+
     function populateTeacherSelect() {
         const select = document.getElementById('teacher-select');
         select.innerHTML = '';
@@ -365,7 +376,6 @@
         });
     }
 
-    // 🔨 精準呈現：每年只有 2 個橫列有名字的表格生成器
     function generate5YearTableHtml(startYear, endYear, currentTeacherName) {
         let thHtml = '<tr>';
         for (let y = startYear; y <= endYear; y++) {
@@ -374,7 +384,6 @@
         }
         thHtml += '</tr>';
 
-        // 每年上限就是 2 位老師負責出題，所以固定產出 2 列即可，完美還原手寫感
         let rowsHtml = '';
         for (let rowIdx = 0; rowIdx < 2; rowIdx++) {
             rowsHtml += '<tr>';
@@ -386,7 +395,6 @@
                 
                 let cellClass = '';
                 if (isCurrent && teacherName !== "") {
-                    // 如果選中的是 115年 且是自己 -> 噴發淡紫色
                     cellClass = (y === 115) ? 'class="highlight-current-teacher col-115"' : 'class="highlight-other-year"';
                 } else if (y === 115) {
                     cellClass = 'class="col-115"';
@@ -464,10 +472,25 @@
             // 📝 段考命題模式
             const totalExam = t.examNew + t.examHistory;
 
-            // 產出三個 5年一期的精美輪值表格 (只呈現出題的2人)
-            const table111to115 = generate5YearTableHtml(111, 115, t.name);
-            const table116to120 = generate5YearTableHtml(116, 120, t.name);
-            const table121to125 = generate5YearTableHtml(121, 125, t.name);
+            // 🆕 建立三個按鈕的動態開關狀態
+            const activeP1 = currentExamPhase === 1 ? 'active' : '';
+            const activeP2 = currentExamPhase === 2 ? 'active' : '';
+            const activeP3 = currentExamPhase === 3 ? 'active' : '';
+
+            // 根據目前選擇的階段，決定生成哪一個表格與標題文字
+            let targetTableHtml = '';
+            let titleText = '';
+
+            if (currentExamPhase === 1) {
+                titleText = "第一階段：111年 ～ 115年 命題輪值 (每年2位負責)";
+                targetTableHtml = generate5YearTableHtml(111, 115, t.name);
+            } else if (currentExamPhase === 2) {
+                titleText = "第二階段：116年 ～ 120年 命題輪值 (每年2位負責)";
+                targetTableHtml = generate5YearTableHtml(116, 120, t.name);
+            } else {
+                titleText = "第三階段：121年 ～ 125年 命題輪值 (每年2位負責)";
+                targetTableHtml = generate5YearTableHtml(121, 125, t.name);
+            }
 
             targetDiv.innerHTML = `
                 <div class="summary-box">
@@ -477,14 +500,14 @@
                     <div class="summary-box-card"><h4>111~125總計</h4><p>${totalExam}次</p></div>
                 </div>
                 
-                <div class="history-title" style="border-left-color: var(--accent-purple);">第一階段：111年 ～ 115年 命題輪值 (每年2位負責)</div>
-                ${table111to115}
-                
-                <div class="history-title" style="border-left-color: var(--accent-purple);">第二階段：116年 ～ 120年 命題輪值 (每年2位負責)</div>
-                ${table116to120}
-                
-                <div class="history-title" style="border-left-color: var(--accent-purple);">第三階段：121年 ～ 125年 命題輪值 (每年2位負責)</div>
-                ${table121to125}
+                <div class="phase-tabs-container">
+                    <button class="phase-tab-btn ${activeP1}" onclick="switchPhase(1)">111 ~ 115年</button>
+                    <button class="phase-tab-btn ${activeP2}" onclick="switchPhase(2)">116 ~ 120年</button>
+                    <button class="phase-tab-btn ${activeP3}" onclick="switchPhase(3)">121 ~ 125年</button>
+                </div>
+
+                <div class="history-title" style="border-left-color: var(--accent-purple);">${titleText}</div>
+                ${targetTableHtml}
             `;
         }
     }
