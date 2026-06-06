@@ -155,6 +155,20 @@
         .full-doc-image { max-width: 95%; max-height: 85%; border-radius: 6px; border: 2px solid #fff; object-fit: contain; }
         .overlay-close-btn { position: absolute; top: 20px; right: 25px; color: #fff; font-size: 45px; font-weight: bold; cursor: pointer; }
 
+        /* 表格單元格內名字與數字兩端對齊排版 */
+        .cell-content-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 0 8px;
+        }
+        .cell-count-tag {
+            font-family: 'Courier New', Courier, monospace;
+            margin-left: 15px;
+            opacity: 0.9;
+        }
+
         @media (max-width: 768px) {
             body { padding: 6px; }
             * { font-size: 16px; }
@@ -166,7 +180,6 @@
             .summary-card p { font-size: 20px !important; }
             .summary-box-card p { font-size: 22px !important; }
             .history-title { font-size: 18px; }
-            /* 手機版微調圓圈大小，避免佔空間 */
             .doc-thumbnail { height: 38px; width: 38px; }
         }
 
@@ -219,7 +232,7 @@
             
             <div class="sub-tabs-container">
                 <button id="sub-tab-seminar" class="sub-tab-btn active theme-seminar" onclick="switchSubTab('seminar')">📘 研習紀錄</button>
-                <button id="sub-tab-exam" class="sub-tab-btn theme-exam" onclick="switchSubTab('exam')">📝 命題次數(4)</button>
+                <button id="sub-tab-exam" class="sub-tab-btn theme-exam" onclick="switchSubTab('exam')">📝 命題次數</button>
             </div>
 
             <div id="dynamic-personal-zone"></div>
@@ -390,7 +403,11 @@
         });
     }
 
+    // 🛠️ 核心修改部分：改造成能動態生成 5 位老師「名字+次數」並完美對齊的橫向表格
     function generate5YearTableHtml(startYear, endYear, currentTeacherName) {
+        // 定義全體 5 位老師的完整名單（用於比對剩下的 3 位老師）
+        const fullTeacherList = ["盧◯", "李◯", "藺◯", "曹◯", "張◯"];
+
         let thHtml = '<tr>';
         for (let y = startYear; y <= endYear; y++) {
             const class115 = (y === 115) ? 'class="th-115"' : '';
@@ -398,13 +415,35 @@
         }
         thHtml += '</tr>';
 
+        // 核心改造：橫向表格總共需要輸出 5 列 (rowIdx 0 到 4)
         let rowsHtml = '';
-        for (let rowIdx = 0; rowIdx < 2; rowIdx++) {
+        for (let rowIdx = 0; rowIdx < 5; rowIdx++) {
             rowsHtml += '<tr>';
             for (let y = startYear; y <= endYear; y++) {
-                const teachers = globalExamSchedule[y];
-                const teacherName = teachers[rowIdx] || "";
+                // 原本該年得4次的 2 位老師
+                const dutyActive = globalExamSchedule[y] || [];
                 
+                // 動態建構該年份完整 5 人清單：前 2 位是 4 次，後 3 位是 3 次
+                const currentYear5Teachers = [];
+                
+                // 先塞入 4 次的 2 人
+                dutyActive.forEach(name => {
+                    currentYear5Teachers.push({ name: name, count: 4 });
+                });
+                
+                // 再補上剩餘 3 次的 3 人
+                fullTeacherList.forEach(name => {
+                    if (!dutyActive.includes(name)) {
+                        currentYear5Teachers.push({ name: name, count: 3 });
+                    }
+                });
+
+                // 取出目前這一列 (Row) 應該顯示的老師資料
+                const teacherObj = currentYear5Teachers[rowIdx] || { name: "", count: "" };
+                const teacherName = teacherObj.name;
+                const teacherCount = teacherObj.count;
+                
+                // 完整保留高亮比對邏輯
                 const isCurrent = currentTeacherName.includes(teacherName.replace("◯","")) || teacherName.includes(currentTeacherName.replace("◯",""));
                 
                 let cellClass = '';
@@ -414,7 +453,18 @@
                     cellClass = 'class="col-115"';
                 }
 
-                rowsHtml += `<td ${cellClass}>${teacherName}</td>`;
+                // 輸出單元格：利用 flex 佈局達到名字靠左、次數靠右的完美排版
+                if (teacherName !== "") {
+                    rowsHtml += `
+                        <td ${cellClass}>
+                            <div class="cell-content-wrapper">
+                                <span>${teacherName}</span>
+                                <span class="cell-count-tag">${teacherCount}</span>
+                            </div>
+                        </td>`;
+                } else {
+                    rowsHtml += `<td ${cellClass}></td>`;
+                }
             }
             rowsHtml += '</tr>';
         }
@@ -492,13 +542,13 @@
             let titleText = '';
 
             if (currentExamPhase === 1) {
-                titleText = "111～115年_命題4次";
+                titleText = "111～115年 命題次數對照";
                 targetTableHtml = generate5YearTableHtml(111, 115, t.name);
             } else if (currentExamPhase === 2) {
-                titleText = "116～120年_命題4次";
+                titleText = "116～120年 命題次數對照";
                 targetTableHtml = generate5YearTableHtml(116, 120, t.name);
             } else {
-                titleText = "121～125年_命題4次";
+                titleText = "121～125年 命題次數對照";
                 targetTableHtml = generate5YearTableHtml(121, 125, t.name);
             }
 
