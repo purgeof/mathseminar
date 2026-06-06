@@ -188,6 +188,50 @@
             .personal-select-wrapper label { white-space: nowrap; }
             .summary-box { grid-template-columns: repeat(4, 1fr); }
         }
+
+                /* 確保表格容器與表格本身不會溢出螢幕 */
+                .matrix-container, .table-responsive {
+                    width: 100%;
+                    max-width: 100%;
+                    box-sizing: border-box;
+                    padding: 4px; /* 微調留白，幫手機版爭取更多空間 */
+                }
+                
+                /* 命題次數對照表響應式優化 */
+                .matrix-table {
+                    width: 100%;
+                    table-layout: fixed; /* 強制各欄均分總寬度，不會被內容撐開 */
+                    border-collapse: collapse;
+                    box-sizing: border-box;
+                }
+                
+                /* 調整表頭與單元格的樣式，使其在不同螢幕下自動縮放 */
+                .matrix-table th, 
+                .matrix-table td {
+                    padding: 8px 4px; /* 縮減左右內距，防止手機版寬度溢出 */
+                    text-align: center;
+                    font-size: 14px;  /* 預設字型大小 */
+                    box-sizing: border-box;
+                    word-break: break-all; /* 防止文字過長撐開欄位 */
+                }
+                
+                /* 針對手機等小型裝置（螢幕寬度在 480px 以下）的專屬優化 */
+                @media screen and (max-width: 480px) {
+                    .matrix-table th, 
+                    .matrix-table td {
+                        font-size: 12px; /* 手機版自動微調字體，確保 5 欄能完美併排 */
+                        padding: 6px 2px; /* 進一步壓縮間距 */
+                    }
+                    
+                    /* 如果名字後面有帶數字（如 盧○ 4），確保它們能緊湊排列 */
+                    .matrix-table td span {
+                        display: inline-block;
+                        margin-left: 2px;
+                    }
+                }
+
+
+        
     </style>
 </head>
 <body>
