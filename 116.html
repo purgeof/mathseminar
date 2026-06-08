@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>115學年度研習與命題輪值系統</title>
     <style>
         /* ==========================================================================
@@ -18,7 +18,7 @@
         body {
             background-color: #121212;
             color: #e0e0e0;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -29,7 +29,7 @@
             max-width: 1000px;
             background-color: #1e1e1e;
             border-radius: 12px;
-            padding: 20px;
+            padding: 15px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.5);
         }
 
@@ -40,7 +40,7 @@
             background-color: #2a2a2a;
             padding: 15px;
             border-radius: 8px;
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
             margin-bottom: 12px;
             color: #ffffff;
@@ -130,16 +130,16 @@
             background-color: #2d2d2d;
             color: #aaaaaa;
             font-weight: bold;
-            padding: 14px;
-            font-size: 15px;
+            padding: 12px;
+            font-size: 14px;
             border-bottom: 2px solid #1a1a1a;
         }
 
         .main-table td {
-            padding: 14px;
+            padding: 12px;
             text-align: center;
             border-bottom: 1px solid #2d2d2d;
-            font-size: 15px;
+            font-size: 14px;
         }
 
         .btn-view {
@@ -149,7 +149,7 @@
             padding: 6px 12px;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         /* ==========================================================================
@@ -202,7 +202,7 @@
             color: white;
         }
 
-        /* 核心統計迷你卡片 (已過濾掉不要的欄位，僅保留必要的緊湊資訊) */
+        /* 核心統計迷你卡片 */
         .mini-summary-row {
             display: flex;
             gap: 10px;
@@ -212,7 +212,7 @@
 
         .mini-card {
             flex: 1;
-            min-width: 120px;
+            min-width: 100px;
             background-color: #242424;
             border: 1px solid #2d2d2d;
             border-radius: 8px;
@@ -227,7 +227,7 @@
         }
 
         .mini-card .value {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
         }
         .text-orange { color: #f39c12; }
@@ -245,10 +245,10 @@
             background-color: #2c2c2c;
             color: #bbbbbb;
             border: 1px solid #3d3d3d;
-            padding: 8px 16px;
+            padding: 8px 14px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             transition: all 0.2s;
         }
 
@@ -259,18 +259,18 @@
         }
 
         /* ==========================================================================
-           5. 核心響應式網頁設計 (RWD) 命題對照表佈局 (自動抓取並完美適應各種螢幕)
+           5. 終極自適應 (RWD) 命題對照表（保證手機、平板、桌機皆剛好呈現不切邊）
            ========================================================================== */
         .matrix-wrapper {
             width: 100%;
             max-width: 100%;
             box-sizing: border-box;
-            padding: 2px;
-            overflow: hidden; /* 徹底杜絕橫向捲軸 */
+            padding: 0;
+            overflow: hidden; /* 絕不產生橫向捲軸 */
         }
 
         .matrix-title {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             margin-bottom: 12px;
             padding-left: 6px;
@@ -279,7 +279,7 @@
 
         .matrix-table {
             width: 100%;
-            table-layout: fixed; /* 關鍵：強制各年份欄位絕對均分寬度，不被內容撐開 */
+            table-layout: fixed; /* 固定佈局：強制平均分配 5 個欄位的寬度 */
             border-collapse: collapse;
             box-sizing: border-box;
             background-color: #1e1e1e;
@@ -293,6 +293,7 @@
             font-size: 14px;
             border: 1px solid #2d2d2d;
             text-align: center;
+            width: 20%; /* 5 欄剛好 100% 每欄均分 */
         }
 
         .matrix-table td {
@@ -301,7 +302,6 @@
             border: 1px solid #2d2d2d;
             font-size: 14px;
             color: #ffffff;
-            word-break: break-all;
             box-sizing: border-box;
         }
 
@@ -310,42 +310,57 @@
             background-color: #292929;
         }
         
-        /* 名字旁的次數數字微調 */
+        /* 名字與數字的容器佈局：桌機並排，小螢幕靈活處理 */
+        .cell-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            flex-wrap: wrap; /* 當手機寬度不夠時，數字會自動優雅地換到下一行，絕不撐開外框 */
+        }
+
         .count-badge {
             color: #f39c12;
             font-weight: bold;
-            margin-left: 4px;
             font-size: 13px;
         }
 
-        /* 專屬行動裝置的 RWD 媒體查詢優化 (平板、手機防溢出切邊) */
-        @media screen and (max-width: 600px) {
+        /* 專屬極小行動裝置(如各式手機)的 RWD 覆蓋樣式 */
+        @media screen and (max-width: 480px) {
             body { padding: 10px; }
-            .container { padding: 12px; }
+            .container { padding: 10px; }
             
             .matrix-table th {
-                font-size: 13px;
-                padding: 8px 2px;
+                font-size: 12px;
+                padding: 8px 1px; /* 極致縮減內距 */
             }
             .matrix-table td {
-                font-size: 12px; /* 自動微調字體大小，確保手機排版不跑位 */
-                padding: 10px 2px; /* 壓縮左右內距，騰出寬度空間 */
+                font-size: 12px;   /* 降字級確保文字裝得下 */
+                padding: 10px 1px; /* 極致縮減內距，騰出物理寬度空間 */
+            }
+            .cell-content {
+                gap: 1px;
+                flex-direction: row; /* 行動裝置上姓名與數字緊湊並排 */
             }
             .count-badge {
                 font-size: 11px;
-                margin-left: 2px;
             }
         }
 
         /* ==========================================================================
            6. 研習明細表格與圖片圓形化圖示
            ========================================================================== */
+        .detail-wrapper {
+            width: 100%;
+            overflow-x: auto; /* 研習明細因欄位極多，允許在手機上進行小範圍滑動以免擠壓 */
+        }
+
         .detail-table {
             width: 100%;
             border-collapse: collapse;
             background-color: #242424;
             border-radius: 8px;
-            overflow: hidden;
+            min-width: 500px; /* 保證研習表格基本可讀性 */
         }
 
         .detail-table th {
@@ -367,9 +382,9 @@
 
         /* 圖片圓形小圖示樣式 */
         .doc-thumbnail {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%; /* 完美圓形 */
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
             object-fit: cover;
             border: 2px solid #444;
             cursor: pointer;
@@ -379,13 +394,13 @@
             margin: 2px;
         }
 
-        /* 滑鼠懸停時放大檢視效果 */
+        /* 滑鼠懸停與長按放大檢視效果 */
         .doc-thumbnail:hover {
             transform: scale(2.5);
             border-color: #3498db;
             z-index: 10;
             position: relative;
-            border-radius: 4px; /* 放大時轉為方型看得更清楚 */
+            border-radius: 4px;
         }
 
         .no-doc {
@@ -412,9 +427,9 @@
                 <thead>
                     <tr>
                         <th style="width: 15%;">序號</th>
-                        <th style="width: 25%;">姓名</th>
+                        <th style="width: 30%;">姓名</th>
                         <th style="width: 35%;">研習總次數</th>
-                        <th style="width: 25%;">操作</th>
+                        <th style="width: 20%;">操作</th>
                     </tr>
                 </thead>
                 <tbody id="allTeacherRows">
@@ -431,7 +446,7 @@
 
             <div class="sub-tab-container">
                 <button id="subTabStudy" class="sub-tab-btn active" data-type="study" onclick="switchSubTab('study')">📘 研習紀錄</button>
-                <button id="subTabExam" class="sub-tab-btn active" data-type="exam" onclick="switchSubTab('exam')">📝 段考命題</button>
+                <button id="subTabExam" class="sub-tab-btn" data-type="exam" onclick="switchSubTab('exam')">📝 段考命題</button>
             </div>
 
             <div class="mini-summary-row">
@@ -455,20 +470,22 @@
 
             <div id="subContentStudy" style="display: block;">
                 <div class="section-title" id="studyDetailTitle">今年研習明細</div>
-                <table class="detail-table">
-                    <thead>
-                        <tr>
-                            <th>研習日期</th>
-                            <th>研習天數</th>
-                            <th>研習時數</th>
-                            <th>採計次數</th>
-                            <th>研習公文</th>
-                            <th>研習結果</th>
-                        </tr>
-                    </thead>
-                    <tbody id="studyDetailRows">
-                        </tbody>
-                </table>
+                <div class="detail-wrapper">
+                    <table class="detail-table">
+                        <thead>
+                            <tr>
+                                <th>研習日期</th>
+                                <th>研習天數</th>
+                                <th>研習時數</th>
+                                <th>採計次數</th>
+                                <th>研習公文</th>
+                                <th>研習結果</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studyDetailRows">
+                            </tbody>
+                    </table>
+                </div>
             </div>
 
             <div id="subContentExam" style="display: none;">
@@ -493,7 +510,7 @@
     </div>
 
     <script>
-        // 模擬完整資料庫架構
+        // 模擬真實資料庫
         const database = {
             teachers: [
                 { id: 1, name: "李〇", code: "職碼 1" },
@@ -517,13 +534,16 @@
                 5: { lastYear: 20, thisYear: 4, total: 24 }
             },
             studyDetails: {
+                1: [
+                    { date: "114/03/12", days: "1日", hours: "6hr", count: "+2 次", doc: "https://picsum.photos/200/150?random=11", result: "https://picsum.photos/300/100?random=12" },
+                    { date: "114/05/20", days: "1日", hours: "6hr", count: "+2 次", doc: "https://picsum.photos/200/150?random=13", result: "" }
+                ],
                 5: [
                     { date: "114/08/18", days: "1日", hours: "6hr", count: "+2 次", doc: "https://picsum.photos/200/150?random=1", result: "https://picsum.photos/300/100?random=2" },
                     { date: "114/11/26", days: "1日", hours: "6hr", count: "+2 次", doc: "https://picsum.photos/200/150?random=3", result: "https://picsum.photos/300/100?random=4" },
                     { date: "114/06/18", days: "1日", hours: "6hr", count: "+2 次", doc: "https://picsum.photos/200/150?random=5", result: "" }
                 ]
             },
-            // 命題矩陣資料庫
             examMatrix: {
                 1: {
                     years: ["111 年", "112 年", "113 年", "114 年", "115 年"],
@@ -558,24 +578,25 @@
             }
         };
 
-        let currentSubTab = "study"; // 預設子頁面
-        let currentPhase = 1;        // 預設五年一期階段
+        let currentSubTab = "study"; 
+        let currentPhase = 1;        
 
-        // 頁面初始化
         window.addEventListener('DOMContentLoaded', () => {
-            // 模擬異步雲端同步，1秒後完成切換狀態
+            // 雲端資料載入完成提示
             setTimeout(() => {
                 const sync = document.getElementById('syncIndicator');
-                sync.innerText = "成功同步雲端資料... ";
-                sync.className = "sync-status sync-success";
-            }, 1000);
+                if (sync) {
+                    sync.innerText = "成功同步雲端資料庫...";
+                    sync.className = "sync-status sync-success";
+                }
+            }, 800);
 
             renderAllTeacherTable();
             populateSelectOptions();
             loadTeacherData();
         });
 
-        // 切換主頁面 (全體總覽 / 個人紀錄)
+        // 修正切換主頁面的 classList 語法錯誤
         function switchMainTab(tab) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById('pageAll').classList.remove('active');
@@ -583,14 +604,14 @@
 
             if(tab === 'all') {
                 document.querySelectorAll('.tab-btn')[0].classList.add('active');
-                document.getElementById('pageAll').classList.add('add', 'active');
+                document.getElementById('pageAll').classList.add('active');
             } else {
                 document.querySelectorAll('.tab-btn')[1].classList.add('active');
                 document.getElementById('pagePersonal').classList.add('active');
             }
         }
 
-        // 渲染全體總覽表格 (已確實移除了「111~125總命題」欄位)
+        // 渲染全體總覽
         function renderAllTeacherTable() {
             const tbody = document.getElementById('allTeacherRows');
             tbody.innerHTML = "";
@@ -607,7 +628,6 @@
             });
         }
 
-        // 填充下拉選單
         function populateSelectOptions() {
             const select = document.getElementById('teacherSelect');
             select.innerHTML = "";
@@ -619,14 +639,12 @@
             });
         }
 
-        // 當點擊全體總覽的「檢視」按鈕
         function viewTeacherRecord(id) {
             document.getElementById('teacherSelect').value = id;
             switchMainTab('personal');
             loadTeacherData();
         }
 
-        // 切換子頁面 (研習紀錄 / 段考命題)
         function switchSubTab(type) {
             currentSubTab = type;
             document.getElementById('subTabStudy').classList.remove('active');
@@ -644,17 +662,15 @@
             loadTeacherData();
         }
 
-        // 加載選定教師的關聯數據
+        // 修正了 .style.style.display 的巢狀語法錯誤
         function loadTeacherData() {
             const teacherId = document.getElementById('teacherSelect').value;
             const teacher = database.teachers.find(t => t.id == teacherId);
             if(!teacher) return;
 
-            // 填寫核心迷你卡片
             document.getElementById('cardTeacherName').innerText = teacher.name;
 
             if(currentSubTab === "study") {
-                // 研習模式：顯示 去年累計 與 今年新增
                 document.getElementById('cardNameLabel').innerText = "研習人員";
                 document.getElementById('cardLeftBox').style.display = "block";
                 document.getElementById('cardRightBox').style.display = "block";
@@ -666,32 +682,27 @@
                 document.getElementById('cardRightValue').innerText = "+" + studyData.thisYear + "次";
                 document.getElementById('cardTotalValue').innerText = studyData.total;
 
-                // 載入研習細節與圓形小圖示
                 renderStudyDetails(teacherId);
             } else {
-                // 命題模式：隱藏去年累計與今年新增，保持介面最簡化
                 document.getElementById('cardNameLabel').innerText = "命題人員";
-                document.getElementById('cardLeftBox').style.style.display = "none";
+                document.getElementById('cardLeftBox').style.display = "none";
                 document.getElementById('cardRightBox').style.display = "none";
                 
                 const examData = database.examSummary[teacherId];
                 document.getElementById('cardTotalValue').innerText = examData.total;
 
-                // 載入響應式對照表
                 renderMatrixTable();
             }
         }
 
-        // 渲染研習細節與圓形小圖示
         function renderStudyDetails(teacherId) {
             const tbody = document.getElementById('studyDetailRows');
             tbody.innerHTML = "";
             
-            const list = database.studyDetails[teacherId] || database.studyDetails[5]; // 若無資料則拿曹〇的當作範例展示
+            const list = database.studyDetails[teacherId] || database.studyDetails[1]; 
             
             list.forEach(item => {
                 const tr = document.createElement('tr');
-                
                 const docHtml = item.doc ? `<img src="${item.doc}" class="doc-thumbnail" alt="公文">` : `<span class="no-doc">---</span>`;
                 const resultHtml = item.result ? `<img src="${item.result}" class="doc-thumbnail" alt="結果">` : `<span class="no-doc">---</span>`;
                 
@@ -707,7 +718,6 @@
             });
         }
 
-        // 切換輪值對照表的五年階段
         function switchPhase(phaseNum, phaseText) {
             currentPhase = phaseNum;
             document.querySelectorAll('.phase-btn').forEach((btn, idx) => {
@@ -720,14 +730,12 @@
             renderMatrixTable();
         }
 
-        // 渲染命題輪值矩陣 (高度 RWD 優化版本)
+        // 生成高強度自適應 RWD 結構的儲存格
         function renderMatrixTable() {
             const head = document.getElementById('matrixHead');
             const body = document.getElementById('matrixBody');
-            
             const matrixData = database.examMatrix[currentPhase];
             
-            // 1. 生成表頭
             let headHtml = "<tr>";
             matrixData.years.forEach(year => {
                 headHtml += `<th>${year}</th>`;
@@ -735,17 +743,17 @@
             headHtml += "</tr>";
             head.innerHTML = headHtml;
 
-            // 2. 生成對照內容
             let bodyHtml = "";
             matrixData.rows.forEach((row, rowIndex) => {
-                // 前兩列為當年度負責人，加上背景高亮
                 const isDutyRow = rowIndex < 2; 
                 bodyHtml += `<tr class="${isDutyRow ? 'bg-duty' : ''}">`;
                 
                 row.forEach(cell => {
                     bodyHtml += `
                         <td>
-                            ${cell.name}<span class="count-badge">${cell.score}</span>
+                            <div class="cell-content">
+                                <span>${cell.name}</span><span class="count-badge">${cell.score}</span>
+                            </div>
                         </td>
                     `;
                 });
