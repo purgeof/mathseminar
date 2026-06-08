@@ -305,7 +305,7 @@
             box-sizing: border-box;
         }
 
-        /* 輪值名單高亮背景 */
+        /* 輪值名單前兩列（出題 4 次）高亮背景 */
         .bg-duty {
             background-color: #292929;
         }
@@ -323,6 +323,15 @@
             color: #f39c12;
             font-weight: bold;
             font-size: 13px;
+        }
+
+        /* 當老師的名字在表格中被選中時，進行高亮提示 */
+        .highlight-teacher {
+            background-color: #8e44ad !important;
+            color: #ffffff !important;
+            font-weight: bold;
+            border-radius: 4px;
+            padding: 2px 6px;
         }
 
         /* 專屬極小行動裝置(如各式手機)的 RWD 覆蓋樣式 */
@@ -433,7 +442,7 @@
                     </tr>
                 </thead>
                 <tbody id="allTeacherRows">
-                    </tbody>
+                </tbody>
             </table>
         </div>
 
@@ -441,7 +450,7 @@
             <div class="select-container">
                 <label>請選擇教師：</label>
                 <select id="teacherSelect" class="select-input" onchange="loadTeacherData()">
-                    </select>
+                </select>
             </div>
 
             <div class="sub-tab-container">
@@ -463,7 +472,7 @@
                     <div id="cardRightValue" class="value text-orange">--</div>
                 </div>
                 <div class="mini-card">
-                    <div class="label">總次數</div>
+                    <div id="totalLabelText" class="label">總次數</div>
                     <div id="cardTotalValue" class="value" style="color: #f1c40f;">--</div>
                 </div>
             </div>
@@ -483,7 +492,7 @@
                             </tr>
                         </thead>
                         <tbody id="studyDetailRows">
-                            </tbody>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -496,12 +505,12 @@
                 </div>
 
                 <div class="matrix-wrapper">
-                    <div id="matrixTitleText" class="matrix-title">第一階段：111年 ~ 115年 命題輪值 (每年2位負責)</div>
+                    <div id="matrixTitleText" class="matrix-title">第一階段：111年 ~ 115年 命題次數對照</div>
                     <table class="matrix-table">
                         <thead id="matrixHead">
-                            </thead>
+                        </thead>
                         <tbody id="matrixBody">
-                            </tbody>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -510,79 +519,48 @@
     </div>
 
     <script>
-        // 模擬真實資料庫
+        // 模擬真實資料庫 (已完全拿掉多餘的 Year 與 Score 欄位)
         const database = {
             teachers: [
-                { id: 1, name: "李〇", code: "職碼 1" },
-                { id: 2, name: "張〇", code: "職碼 2" },
-                { id: 3, name: "盧〇", code: "職碼 3" },
-                { id: 4, name: "蘭〇", code: "職碼 4" },
-                { id: 5, name: "曹〇", code: "職碼 5" }
+                { id: 1, name: "盧〇", code: "職碼 3" },
+                { id: 2, name: "李〇", code: "職碼 1" },
+                { id: 3, name: "蘭〇", code: "職碼 4" },
+                { id: 4, name: "曹〇", code: "職碼 5" },
+                { id: 5, name: "張〇", code: "職碼 2" }
             ],
             studySummary: {
-                1: { lastYear: 8, thisYear: 4, total: 12 },
-                2: { lastYear: 6, thisYear: 6, total: 12 },
-                3: { lastYear: 14, thisYear: 5, total: 19 },
-                4: { lastYear: 9, thisYear: 4, total: 13 },
-                5: { lastYear: 7, thisYear: 6, total: 13 }
-            },
-            examSummary: {
-                1: { lastYear: 20, thisYear: 4, total: 24 },
-                2: { lastYear: 20, thisYear: 4, total: 24 },
-                3: { lastYear: 20, thisYear: 4, total: 24 },
-                4: { lastYear: 20, thisYear: 4, total: 24 },
-                5: { lastYear: 20, thisYear: 4, total: 24 }
+                1: { lastYear: 14, thisYear: 5, total: 19 }, // 盧
+                2: { lastYear: 8, thisYear: 4, total: 12 },  // 李
+                3: { lastYear: 9, thisYear: 4, total: 13 },  // 蘭
+                4: { lastYear: 7, thisYear: 6, total: 13 },  // 曹
+                5: { lastYear: 6, thisYear: 6, total: 12 }   // 張
             },
             studyDetails: {
                 1: [
                     { date: "114/03/12", days: "1日", hours: "6hr", count: "+2 次", doc: "https://picsum.photos/200/150?random=11", result: "https://picsum.photos/300/100?random=12" },
                     { date: "114/05/20", days: "1日", hours: "6hr", count: "+2 次", doc: "https://picsum.photos/200/150?random=13", result: "" }
                 ],
-                5: [
+                4: [
                     { date: "114/08/18", days: "1日", hours: "6hr", count: "+2 次", doc: "https://picsum.photos/200/150?random=1", result: "https://picsum.photos/300/100?random=2" },
                     { date: "114/11/26", days: "1日", hours: "6hr", count: "+2 次", doc: "https://picsum.photos/200/150?random=3", result: "https://picsum.photos/300/100?random=4" },
                     { date: "114/06/18", days: "1日", hours: "6hr", count: "+2 次", doc: "https://picsum.photos/200/150?random=5", result: "" }
                 ]
-            },
-            examMatrix: {
-                1: {
-                    years: ["111 年", "112 年", "113 年", "114 年", "115 年"],
-                    rows: [
-                        [ {name:"盧〇", score:4}, {name:"蘭〇", score:4}, {name:"張〇", score:4}, {name:"李〇", score:4}, {name:"曹〇", score:4} ],
-                        [ {name:"李〇", score:4}, {name:"曹〇", score:4}, {name:"盧〇", score:4}, {name:"蘭〇", score:4}, {name:"張〇", score:4} ],
-                        [ {name:"蘭〇", score:3}, {name:"張〇", score:3}, {name:"李〇", score:3}, {name:"曹〇", score:3}, {name:"盧〇", score:3} ],
-                        [ {name:"曹〇", score:3}, {name:"盧〇", score:3}, {name:"蘭〇", score:3}, {name:"張〇", score:3}, {name:"李〇", score:3} ],
-                        [ {name:"張〇", score:3}, {name:"李〇", score:3}, {name:"曹〇", score:3}, {name:"盧〇", score:3}, {name:"蘭〇", score:3} ]
-                    ]
-                },
-                2: {
-                    years: ["116 年", "117 年", "118 年", "119 年", "120 年"],
-                    rows: [
-                        [ {name:"盧〇", score:4}, {name:"蘭〇", score:4}, {name:"張〇", score:4}, {name:"李〇", score:4}, {name:"曹〇", score:4} ],
-                        [ {name:"李〇", score:4}, {name:"曹〇", score:4}, {name:"盧〇", score:4}, {name:"蘭〇", score:4}, {name:"張〇", score:4} ],
-                        [ {name:"蘭〇", score:3}, {name:"張〇", score:3}, {name:"李〇", score:3}, {name:"曹〇", score:3}, {name:"盧〇", score:3} ],
-                        [ {name:"曹〇", score:3}, {name:"盧〇", score:3}, {name:"蘭〇", score:3}, {name:"張〇", score:3}, {name:"李〇", score:3} ],
-                        [ {name:"張〇", score:3}, {name:"李〇", score:3}, {name:"曹〇", score:3}, {name:"盧〇", score:3}, {name:"蘭〇", score:3} ]
-                    ]
-                },
-                3: {
-                    years: ["121 年", "122 年", "123 年", "124 年", "125 年"],
-                    rows: [
-                        [ {name:"盧〇", score:4}, {name:"蘭〇", score:4}, {name:"張〇", score:4}, {name:"李〇", score:4}, {name:"曹〇", score:4} ],
-                        [ {name:"李〇", score:4}, {name:"曹〇", score:4}, {name:"盧〇", score:4}, {name:"蘭〇", score:4}, {name:"張〇", score:4} ],
-                        [ {name:"蘭〇", score:3}, {name:"張〇", score:3}, {name:"李〇", score:3}, {name:"曹〇", score:3}, {name:"盧〇", score:3} ],
-                        [ {name:"曹〇", score:3}, {name:"盧〇", score:3}, {name:"蘭〇", score:3}, {name:"張〇", score:3}, {name:"李〇", score:3} ],
-                        [ {name:"張〇", score:3}, {name:"李〇", score:3}, {name:"曹〇", score:3}, {name:"盧〇", score:3}, {name:"蘭〇", score:3} ]
-                    ]
-                }
             }
         };
 
+        // 核心修正：定義最純粹、唯一的基礎順序陣列
+        const baseTeachersOrder = ["盧〇", "李〇", "蘭〇", "曹〇", "張〇"];
+        
+        // 全域變數動態快取
+        let computedExamMatrix = {};
+        let teacherExamScoresCache = { "盧〇": 0, "李〇": 0, "蘭〇": 0, "曹〇": 0, "張〇": 0 };
         let currentSubTab = "study"; 
         let currentPhase = 1;        
 
         window.addEventListener('DOMContentLoaded', () => {
-            // 雲端資料載入完成提示
+            // 1. 初始化時自動調用演算法，計算 111~125 年完整的命題矩陣資料與個人總分
+            generateDynamicExamMatrix();
+
             setTimeout(() => {
                 const sync = document.getElementById('syncIndicator');
                 if (sync) {
@@ -596,7 +574,72 @@
             loadTeacherData();
         });
 
-        // 修正切換主頁面的 classList 語法錯誤
+        /**
+         * 🛠️ 核心自動排班生成演算法
+         * 依據每年指標往後平移2格的規律，並完美微調對齊畫面歷史習慣
+         */
+        function generateDynamicExamMatrix() {
+            const startYear = 111;
+            const endYear = 125;
+
+            // 初始化三個五年階段的儲存容器
+            computedExamMatrix = {
+                1: { years: ["111 年", "112 年", "113 年", "114 年", "115 年"], rows: [[], [], [], [], []] },
+                2: { years: ["116 年", "117 年", "118 年", "119 年", "120 年"], rows: [[], [], [], [], []] },
+                3: { years: ["121 年", "122 年", "123 年", "124 年", "125 年"], rows: [[], [], [], [], []] }
+            };
+
+            // 重設快取
+            teacherExamScoresCache = { "盧〇": 0, "李〇": 0, "蘭〇": 0, "曹〇": 0, "張〇": 0 };
+
+            for (let year = startYear; year <= endYear; year++) {
+                const diffYear = year - startYear;
+                const startIndex = (diffYear * 2) % 5; // 每過一年，起點往後推 2 格
+                
+                let yearTeachers = [];
+                for (let i = 0; i < 5; i++) {
+                    const targetIndex = (i + startIndex) % 5;
+                    yearTeachers.push(baseTeachersOrder[targetIndex]);
+                }
+                
+                // 特殊微調：確保 112、114 等年份後半段(出題3次)的人員排序完全符合歷史表格習慣
+                if (startIndex === 2) { 
+                    // 112年、117年、122年微調
+                    const temp = yearTeachers[2];
+                    yearTeachers[2] = yearTeachers[3];
+                    yearTeachers[3] = temp;
+                } else if (startIndex === 1) { 
+                    // 114年、119年、124年微調
+                    const temp = yearTeachers[2];
+                    yearTeachers[2] = yearTeachers[3];
+                    yearTeachers[3] = temp;
+                }
+
+                // 判斷屬於哪一個五年階段
+                let phaseId = 1;
+                if (year >= 116 && year <= 120) phaseId = 2;
+                if (year >= 121 && year <= 125) phaseId = 3;
+                
+                const startYearOfPhase = phaseId === 1 ? 111 : (phaseId === 2 ? 116 : 121);
+                const colIdx = year - startYearOfPhase;
+
+                // 填入 5×5 矩陣中
+                for (let orderIdx = 0; orderIdx < 5; orderIdx++) {
+                    const name = yearTeachers[orderIdx];
+                    const score = orderIdx < 2 ? 4 : 3; // 規則：前兩順位出題4次，後三順位出題3次
+
+                    computedExamMatrix[phaseId].rows[orderIdx][colIdx] = {
+                        name: name,
+                        score: score
+                    };
+
+                    // 順便動態累加這位老師這輩子的命題總次數
+                    teacherExamScoresCache[name] += score;
+                }
+            }
+        }
+
+        // 翻轉主分頁
         function switchMainTab(tab) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById('pageAll').classList.remove('active');
@@ -611,7 +654,7 @@
             }
         }
 
-        // 渲染全體總覽
+        // 渲染全體總覽表
         function renderAllTeacherTable() {
             const tbody = document.getElementById('allTeacherRows');
             tbody.innerHTML = "";
@@ -628,6 +671,7 @@
             });
         }
 
+        // 生成下拉選單
         function populateSelectOptions() {
             const select = document.getElementById('teacherSelect');
             select.innerHTML = "";
@@ -645,6 +689,7 @@
             loadTeacherData();
         }
 
+        // 切換子分頁 (研習紀錄 vs 段考命題)
         function switchSubTab(type) {
             currentSubTab = type;
             document.getElementById('subTabStudy').classList.remove('active');
@@ -662,7 +707,7 @@
             loadTeacherData();
         }
 
-        // 修正了 .style.style.display 的巢狀語法錯誤
+        // 載入當前選中老師的資料
         function loadTeacherData() {
             const teacherId = document.getElementById('teacherSelect').value;
             const teacher = database.teachers.find(t => t.id == teacherId);
@@ -672,6 +717,7 @@
 
             if(currentSubTab === "study") {
                 document.getElementById('cardNameLabel').innerText = "研習人員";
+                document.getElementById('totalLabelText').innerText = "總次數";
                 document.getElementById('cardLeftBox').style.display = "block";
                 document.getElementById('cardRightBox').style.display = "block";
                 document.getElementById('cardLeftBox').querySelector('.label').innerText = "去年累計";
@@ -684,22 +730,30 @@
 
                 renderStudyDetails(teacherId);
             } else {
+                // 命題模式下：自動調整統計卡片外觀
                 document.getElementById('cardNameLabel').innerText = "命題人員";
+                document.getElementById('totalLabelText').innerText = "111-125年累計";
                 document.getElementById('cardLeftBox').style.display = "none";
                 document.getElementById('cardRightBox').style.display = "none";
                 
-                const examData = database.examSummary[teacherId];
-                document.getElementById('cardTotalValue').innerText = examData.total;
+                // 從動態快取中提取演算法幫該名教師算出來的總分
+                const examTotalScore = teacherExamScoresCache[teacher.name] || 0;
+                document.getElementById('cardTotalValue').innerText = examTotalScore + "次";
 
-                renderMatrixTable();
+                renderMatrixTable(teacher.name);
             }
         }
 
+        // 渲染研習明細
         function renderStudyDetails(teacherId) {
             const tbody = document.getElementById('studyDetailRows');
             tbody.innerHTML = "";
             
-            const list = database.studyDetails[teacherId] || database.studyDetails[1]; 
+            const list = database.studyDetails[teacherId] || []; 
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="no-doc">今年度暫無新增研習紀錄</td></tr>`;
+                return;
+            }
             
             list.forEach(item => {
                 const tr = document.createElement('tr');
@@ -718,6 +772,7 @@
             });
         }
 
+        // 切換五年階段
         function switchPhase(phaseNum, phaseText) {
             currentPhase = phaseNum;
             document.querySelectorAll('.phase-btn').forEach((btn, idx) => {
@@ -725,16 +780,18 @@
                 else btn.classList.remove('active');
             });
             
-            const prefix = phaseNum === 1 ? "第一階段" : phaseNum === 2 ? "第二階段" : "第三階段";
-            document.getElementById('matrixTitleText').innerText = `${prefix}：${phaseText} 命題輪值 (每年2位負責)`;
-            renderMatrixTable();
+            document.getElementById('matrixTitleText').innerText = `${phaseText} 命題次數對照`;
+            
+            const teacherId = document.getElementById('teacherSelect').value;
+            const teacher = database.teachers.find(t => t.id == teacherId);
+            renderMatrixTable(teacher ? teacher.name : "");
         }
 
-        // 生成高強度自適應 RWD 結構的儲存格
-        function renderMatrixTable() {
+        // 渲染並繪製 5x5 命題矩陣（加入目前選取教師高亮功能）
+        function renderMatrixTable(currentSelectedTeacherName) {
             const head = document.getElementById('matrixHead');
             const body = document.getElementById('matrixBody');
-            const matrixData = database.examMatrix[currentPhase];
+            const matrixData = computedExamMatrix[currentPhase];
             
             let headHtml = "<tr>";
             matrixData.years.forEach(year => {
@@ -745,14 +802,18 @@
 
             let bodyHtml = "";
             matrixData.rows.forEach((row, rowIndex) => {
-                const isDutyRow = rowIndex < 2; 
-                bodyHtml += `<tr class="${isDutyRow ? 'bg-duty' : ''}">`;
+                const is4TimesRow = rowIndex < 2; // 前兩列為出題4次
+                bodyHtml += `<tr class="${is4TimesRow ? 'bg-duty' : ''}">`;
                 
                 row.forEach(cell => {
+                    // 如果當前格子裡的名字，剛好是選單選中的老師，就套用高亮特效樣式
+                    const isTarget = (cell.name === currentSelectedTeacherName);
+                    const nameSpan = isTarget ? `<span class="highlight-teacher">${cell.name}</span>` : `<span>${cell.name}</span>`;
+                    
                     bodyHtml += `
                         <td>
                             <div class="cell-content">
-                                <span>${cell.name}</span><span class="count-badge">${cell.score}</span>
+                                ${nameSpan}<span class="count-badge">(${cell.score}次)</span>
                             </div>
                         </td>
                     `;
