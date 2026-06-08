@@ -151,7 +151,7 @@
                     <button class="sub-tab-btn" onclick="switchPhase(3, '121 ~ 125年')">121 ~ 125年</button>
                 </div>
                 <div class="matrix-wrapper">
-                    <div id="matrixTitleText" style="font-size:15px; font-weight:bold; margin-bottom:12px; padding-left:6px; border-left:3px solid #9b59b6;">第一階段：111年 ~ 115年 命題次數對照</div>
+                    <div id="matrixTitleText" style="font-size:15px; font-weight:bold; margin-bottom:12px; padding-left:6px; border-left:3px solid #9b59b6;">111~115年_命題次數</div>
                     <table class="matrix-table">
                         <thead id="matrixHead"></thead>
                         <tbody id="matrixBody"></tbody>
@@ -340,7 +340,7 @@
             document.querySelectorAll('.phase-btn-group .sub-tab-btn').forEach((b,i) => {
                 if(i === p-1) b.classList.add('active'); else b.classList.remove('active');
             });
-            document.getElementById('matrixTitleText').innerText = `${text} 命題次數對照`;
+            document.getElementById('matrixTitleText').innerText = `${text} 命題次數`;
             renderMatrix(document.getElementById('teacherSelect').value);
         }
 
