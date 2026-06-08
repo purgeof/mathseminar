@@ -276,7 +276,7 @@
                 <div class="table-responsive-wrapper">
                     <table class="detail-table">
                         <thead>
-                            <tr><th>研習日期</th><th>研習天數</th><th>研習時數</th><th>採計次數</th><th>研習公文</th><th>研習結果</th></tr>
+                            <tr><th>研習<BR>日期</th><th>研習<BR>天數</th><th>研習<BR>時數</th><th>採計<BR>次數</th><th>研習<BR>公文</th><th>研習<BR>結果</th></tr>
                         </thead>
                         <tbody id="studyDetailRows"></tbody>
                     </table>
@@ -285,11 +285,11 @@
 
             <div id="subContentExam" style="display:none">
                 <div class="sub-tab-container" style="margin-bottom: 10px;">
-                    <button class="sub-tab-btn active" onclick="switchPhase(1, '111 ~ 115年')">111 ~ 115年</button>
-                    <button class="sub-tab-btn" onclick="switchPhase(2, '116 ~ 120年')">116 ~ 120年</button>
-                    <button class="sub-tab-btn" onclick="switchPhase(3, '121 ~ 125年')">121 ~ 125年</button>
+                    <button class="sub-tab-btn active" onclick="switchPhase(1, '111 ~ 115年')">111~115年</button>
+                    <button class="sub-tab-btn" onclick="switchPhase(2, '116 ~ 120年')">116~120年</button>
+                    <button class="sub-tab-btn" onclick="switchPhase(3, '121 ~ 125年')">121~125年</button>
                 </div>
-                <div id="matrixTitleText" class="section-title" style="border-left-color: #9b59b6;">111年 ~ 115年 命題次數對照</div>
+                <div id="matrixTitleText" class="section-title" style="border-left-color: #9b59b6;">111~115年_命題次數</div>
                 <div class="table-responsive-wrapper">
                     <table class="matrix-table">
                         <thead id="matrixHead"></thead>
@@ -325,7 +325,7 @@
 
                     calculateExamLogic();
 
-                    document.getElementById('syncIndicator').innerText = "成功同步雲端資料庫...";
+                    document.getElementById('syncIndicator').innerText = "成功同步資料...";
                     document.getElementById('syncIndicator').className = "sync-status sync-success";
                     
                     initSystem();
@@ -481,7 +481,7 @@
             buttons.forEach((b, i) => {
                 if(i === p-1) b.classList.add('active'); else b.classList.remove('active');
             });
-            document.getElementById('matrixTitleText').innerText = `${text} 命題次數對照`;
+            document.getElementById('matrixTitleText').innerText = `${text} 命題次數`;
             renderMatrix(document.getElementById('teacherSelect').value);
         }
 
