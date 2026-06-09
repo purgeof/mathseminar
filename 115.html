@@ -338,7 +338,7 @@
                     <button class="phase-tab-btn" onclick="switchPhase(3, '121 ~ 125年')">121 ~ 125年</button>
                 </div>
                 
-                <div id="matrixTitleText" class="section-title" style="border-left-color: #9b59b6;">111年 ~ 115年 命題次數對照</div>
+                <div id="matrixTitleText" class="section-title" style="border-left-color: #9b59b6;">111年 ~ 115年 命題次數</div>
                 <div class="table-responsive-wrapper">
                     <table class="matrix-table">
                         <thead id="matrixHead"></thead>
@@ -530,7 +530,7 @@
             buttons.forEach((b, i) => {
                 if(i === p-1) b.classList.add('active'); else b.classList.remove('active');
             });
-            document.getElementById('matrixTitleText').innerText = `${text} 命題次數對照`;
+            document.getElementById('matrixTitleText').innerText = `${text} 命題次數`;
             renderMatrix(document.getElementById('teacherSelect').value);
         }
 
